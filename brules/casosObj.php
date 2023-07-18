@@ -83,7 +83,7 @@ class casosObj extends configuracionesGridObj{
 
     /**
      * JGP 26/06/23
-     * Obtiene esatistica básica de expedientes
+     * Obtiene esatistica bï¿½sica de expedientes
      */
     public function obtenerEstadisticaExpedientes(){
         $array = array();
@@ -108,6 +108,35 @@ class casosObj extends configuracionesGridObj{
 
         return $array;
     }
+
+    /**
+     * CSAT 18/07/23
+     * Obtiene esatistica bï¿½sica de expedientes (HISTORICO)
+     */
+    public function obtenerEstadisticaExpedientesHISTORICO(){
+        $array = array();
+        $ds = new casosDB();
+        $datosBD = new datosBD();
+        $result = $ds->obtenerEstadisticaExpedientesDBHISTORICO();
+        $array =  $datosBD->arrDatosObj($result);
+
+        return $array[0];
+    }
+
+    /**
+     * CSAT 18/07/23
+     * Obtiene esatistica de expedientes por abogado
+     */
+    public function expedientesPorabogadoHISTORICO(){
+        $array = array();
+        $ds = new casosDB();
+        $datosBD = new datosBD();
+        $result = $ds->expedientesPorabogadoDBHISTORICO();
+        $array =  $datosBD->arrDatosObj($result);
+
+        return $array;
+    }
+
     
 //>>>>CMPB, 03/02/2023, cambios para eliminar nodos con hijos o sin hijos
     public function CasosHijos($id){

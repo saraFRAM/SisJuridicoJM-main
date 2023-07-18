@@ -28,8 +28,12 @@ $usuariosObj = new usuariosObj();
 $casoAccionesObj = new casoAccionesObj();
 
 $usuario = $usuariosObj->UserByID($_SESSION["idUsuario"]);
-$estadisticaArr = $casosObj->obtenerEstadisticaExpedientes();
-$casosPorAbogadoArr = $casosObj->expedientesPorabogado();
+$estadisticaArrHI = $casosObj->obtenerEstadisticaExpedientesHISTORICO();
+$casosPorAbogadoArrHI = $casosObj->expedientesPorabogadoHISTORICO();
+
+$usuario = $usuariosObj->UserByID($_SESSION["idUsuario"]);
+$estadisticaArrHI = $casosObj->obtenerEstadisticaExpedientesHISTORICO();
+$casosPorAbogadoArrHI = $casosObj->expedientesPorabogadoHISTORICO();
 
 //Obtener el id del cliente
 $idCliente = -1;
@@ -42,7 +46,7 @@ $titularId = "";
 $filtroTitular = "";
 if($_SESSION['idRol']==1){
     $titularId = $_SESSION['idUsuario'];
-    if($usuario->titularTodos > 0){
+    if($usuario->titularTodos < 0){
         $titularId = "";
         $filtroTitular = $usuario->nombre;
     }
@@ -224,7 +228,7 @@ $dataInput = array("required"=>"");
 $arrCampoResponsable = array(
     array("nameid"=>"responsableId", "type"=>"select", "class"=>"form-control required ".$claseResponsable, "readonly"=>false, "label"=>"Responsable:", "datos"=>$arrResponsable, "value"=>$valueResponsable, "claseRow"=>"cambiaRes oculto", "required"=>"required"),
 );
-    //NO BORRAR ES PARA LA EXPORTACIÓN
+    //NO BORRAR ES PARA LA EXPORTACIï¿½N
     if(isset($_POST["IgnorePaging"])){
 		$result->ExportSettings->IgnorePaging = true;
 	}
@@ -530,10 +534,10 @@ $arrCampoResponsable = array(
                     <div id="row-proxEventos"  id="modal-contenido-estadistica">
                         <div class="container-estadistica" id="estadistica-casos">        
                             <div style="margin-bottom: 50px;">
-                                <strong>Total Expedientes: </strong><?php echo $estadisticaArr->totalCasos; ?><br/>
-                                <strong>Total Clientes: </strong><?php echo $estadisticaArr->totalClientes; ?><br/>
-                                <strong>Total Lic. Alma: </strong><?php echo $estadisticaArr->totalAlma; ?><br/>
-                                <strong>Total Lic. Jesus: </strong><?php echo $estadisticaArr->totalJesus; ?><br/>
+                                <strong>Total Expedientes: </strong><?php echo $estadisticaArrHI->totalCasos; ?><br/>
+                                <strong>Total Clientes: </strong><?php echo $estadisticaArrHI->totalClientes; ?><br/>
+                                <strong>Total Lic. Alma: </strong><?php echo $estadisticaArrHI->totalAlma; ?><br/>
+                                <strong>Total Lic. Jesus: </strong><?php echo $estadisticaArrHI->totalJesus; ?><br/>
                             </div>
                               
                             <div>
@@ -542,13 +546,13 @@ $arrCampoResponsable = array(
                                         <th>Nombre</th>
                                         <th>Casos</th>
                                     </tr>
-                                <?php foreach($casosPorAbogadoArr as $casoAbogado){ ?>
+                                <?php foreach($casosPorAbogadoArrHI as $casoAbogadoHI){ ?>
                                     <tr>
                                         <td>
-                                            <?php echo $casoAbogado->nombre; ?>
+                                            <?php echo $casoAbogadoHI->nombre; ?>
                                         </td>
                                         <td>
-                                            <?php echo $casoAbogado->CasosTotal; ?>
+                                            <?php echo $casoAbogadoHI->CasosTotal; ?>
                                         </td>
                                     </tr>
                                 <?php } ?>

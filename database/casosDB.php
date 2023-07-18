@@ -85,15 +85,35 @@ class casosDB {
 
         return $result;
     }
-
-    /**
-     * JGP 26/06/23
-     * Obtiene estadistica de expedientes por abogado
-     */
     public function expedientesPorabogadoDB(){
         $ds = new DataServices();
         $param= null;
         $result = $ds->Execute("expedientesPorabogadoDB", $param);
+        $ds->CloseConnection();
+
+        return $result;
+    }
+
+
+    /**
+     * CSAT 18/07/23
+     * Obtiene estadistica de expedientes por abogado (HISTORICO)
+     */
+
+     public function obtenerEstadisticaExpedientesDBHISTORICO(){
+        $ds = new DataServices();
+        $param= null;
+        $result = $ds->Execute("obtenerEstadisticaExpedientesDBHISTORICO", $param);
+        $ds->CloseConnection();
+
+        return $result;
+    }
+
+
+    public function expedientesPorabogadoDBHISTORICO(){
+        $ds = new DataServices();
+        $param= null;
+        $result = $ds->Execute("expedientesPorabogadoDBHISTORICO", $param);
         $ds->CloseConnection();
 
         return $result;

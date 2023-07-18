@@ -570,6 +570,36 @@
       GROUP BY A.responsableId
     </query>
   </Command>
+
+  <Command id="obtenerEstadisticaExpedientesDBHISTORICO">
+    <query>
+    SELECT 
+    COUNT(DISTINCT idCaso) AS 'totalCasos',
+    COUNT(DISTINCT clienteId) AS 'totalClientes',
+    ROUND(COUNT(DISTINCT idCaso)/COUNT(DISTINCT clienteId),2) AS 'promedioPorcliente',
+    SUM(titularId2 = 23) AS 'totalJesus',
+    SUM(titularId2 = 21) AS 'totalAlma'
+    FROM casos
+    WHERE estatusId IN(3,4);
+    </query>
+  </Command>
+  <Command id="expedientesPorabogadoDBHISTORICO">
+    <query>
+    SELECT 
+      B.nombre,
+      A.responsableId,
+      COUNT(A.idCaso) CasosTotal
+      FROM casos AS A
+      LEFT JOIN usuarios AS B ON B.idUsuario = A.responsableId
+      WHERE A.estatusId IN(3,4)
+      GROUP BY A.responsableId
+    </query>
+  </Command>
+
+
+
+
+
   <!--Consultas caso acciones -->
   <Command id="GridActividadesDB">
    <query>
