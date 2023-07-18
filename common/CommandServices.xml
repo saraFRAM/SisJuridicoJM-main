@@ -1,0 +1,1516 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Commands>
+
+  <!-- Aumentar maximo del group concat -->
+  <Command id="MaximoGroupConcat">
+    <query> SET SESSION GROUP_CONCAT_MAX_LEN = 1000000 </query>
+  </Command>
+  <Command id="IdiomaEspanol">
+    <query> SET lc_time_names = 'es_ES' </query>
+  </Command>
+
+  <!-- General Consult -->
+   <Command id="GetAllData">
+    <query>SELECT * FROM ? ?</query>
+   </Command>
+   <Command id="updateDB">
+    <query>UPDATE ? SET ?='?' WHERE ?=?</query>
+   </Command>
+   <Command id="deleteDB">
+     <query>DELETE FROM ? WHERE ?=? </query>
+   </Command>
+  <!-- Fin General Consult -->
+
+  <!--Consultas roles -->
+   <Command id="GetAllRoles">
+    <query>SELECT * FROM roles ?</query>
+   </Command>
+   <Command id="obtenerRolByIdDB">
+        <query>SELECT * FROM roles WHERE idRol=?</query>
+   </Command>
+   <Command id="updateRolGrid">
+     <query>UPDATE roles SET rol='@rol' WHERE idRol=@idRol </query>
+   </Command>
+   <Command id="insertRolGrid">
+     <query>INSERT INTO roles (rol, fechaCreacion) VALUES ('@rol', NOW())</query>
+   </Command>
+   <Command id="deleteRolesGrid">
+     <query>DELETE FROM roles WHERE idRol=@idRol </query>
+   </Command>
+
+
+   <!--Consultas usuarios -->
+  <Command id="LoginUser">
+    <query>SELECT * FROM usuarios WHERE email='?' AND password='?'</query>
+  </Command>
+  <Command id="UserByID">
+    <query>SELECT * FROM usuarios WHERE idUsuario=?</query>
+  </Command>
+  <Command id="getGastosForGrid">
+    <query>
+      
+      SELECT A.*,
+      IF(A.activo=1,'Si','No') AS usuarioActivo,
+      IF(A.activo=1,'desactivar.png','activar.jpg') AS nombreImg,
+      COALESCE((SELECT SUM(monto) FROM conceptos B LEFT JOIN usuarios C ON B.usuarioId=C.idUsuario WHERE B.tipoId=1 AND C.idUsuario=A.idUsuario ? ),0) AS 'totalCargos',
+      COALESCE((SELECT SUM(monto) FROM conceptos B LEFT JOIN usuarios C ON B.usuarioId=C.idUsuario WHERE B.tipoId=2 AND C.idUsuario=A.idUsuario ? ),0) AS 'totalAbonos',
+      ((SELECT totalAbonos) -(SELECT totalCargos)) AS 'saldoPeriodo',
+      (SELECT CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(fecha, "%w"))
+        , ' ', DATE_FORMAT(fecha, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(fecha, "%m"))
+        ) FROM conceptos B LEFT JOIN usuarios C ON B.usuarioId=C.idUsuario WHERE B.tipoId=2 AND C.idUsuario=A.idUsuario ? ORDER BY fecha DESC LIMIT 1 ) AS 'ultimaEntrada',
+      (SELECT CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(fecha, "%w"))
+        , ' ', DATE_FORMAT(fecha, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(fecha, "%m"))
+        ) FROM conceptos B LEFT JOIN usuarios C ON B.usuarioId=C.idUsuario WHERE B.tipoId=1 AND C.idUsuario=A.idUsuario ? ORDER BY fecha DESC LIMIT 1 ) AS 'ultimaSalida'
+      FROM usuarios A
+      ?
+      ORDER BY A.idRol
+    </query>
+  </Command>
+  <Command id="getUsersForGrid">
+    <query>
+      SELECT A.*,
+      IF(A.activo=1,'Si','No') AS usuarioActivo,
+      IF(A.activo=1,'desactivar.png','activar.jpg') AS nombreImg
+     
+      FROM usuarios A
+      ?
+      ORDER BY A.idRol
+    </query>
+  </Command>
+  <Command id="updateUserGrid">
+    <query>UPDATE usuarios SET idRol='@idRol', nombre='@nombre', email='@email', password='@password' WHERE idUsuario=@idUsuario </query>
+  </Command>
+  <Command id="deleteUserGrid">
+    <query>DELETE FROM usuarios WHERE idUsuario=@idUsuario </query>
+  </Command>
+  <Command id="insertUserGrid">
+    <query>INSERT INTO usuarios (idRol, nombre, email, password, fechaCreacion) VALUES ('@idRol','@nombre', '@email', '@password', NOW())</query>
+  </Command>
+  <Command id="obtTodosUsuariosDB">
+    <query> 
+    SELECT A.* 
+    FROM usuarios AS A 
+    ? 
+    ?
+    </query>
+  </Command>
+  <Command id="UserByEmailDB">
+    <query>SELECT * FROM usuarios WHERE email='?' limit 0,1</query>
+   </Command>
+  <Command id="updateUsuarioDB">
+    <query>UPDATE usuarios SET ?='?' WHERE idUsuario=?</query>
+  </Command>
+   <Command id="insertUsuarioDB">
+    <query>INSERT INTO usuarios (idRol, nombre, email, password, activo, permisohistorico, numAbogado, coordinadorId, fechaCreacion) VALUES (?, '?', '?', '?', ?, ?, '?', ?, '?')</query>
+  </Command>
+
+  <Command id="actualizarUsuarioDB">
+    <query>
+      UPDATE usuarios 
+      SET idRol=?, nombre='?', email='?', password='?', activo=?, permisohistorico= ?, numAbogado=?, coordinadorId=?, fechaAct='?' 
+      WHERE idUsuario=? 
+    </query>
+   </Command>
+
+    <Command id="deleteUsuarioDB">
+      <query>DELETE FROM usuarios WHERE idUsuario=? </query>
+    </Command>
+
+    <Command id="updateUsuarioDB">
+      <query>
+        UPDATE usuarios SET ?='?' WHERE idUsuario=?
+      </query>
+   </Command>
+
+   <Command id="obtUsuariosByIdRolDB">
+    <query>
+      SELECT A.*
+      FROM usuarios A
+      LEFT JOIN perfiles B ON A.idUsuario=B.usuarioId
+      ?
+    </query>
+  </Command>
+
+
+    <!--Consultas catConfiguraciones -->
+   <Command id="ObtTodasConfiguracionesDB">
+    <query> SELECT * FROM cat_configuraciones ? ?</query>
+   </Command>
+   <Command id="ConfiguracionByID">
+    <query>SELECT * FROM cat_configuraciones WHERE idConfiguracion=?</query>
+   </Command>
+   <Command id="updateConfiguracionDB">
+    <query> UPDATE cat_configuraciones SET nombre='?', valor='?' WHERE idConfiguracion=?</query>
+   </Command>
+  <Command id="insConfiguracionDB">
+    <query>INSERT INTO cat_configuraciones (nombre, valor) VALUES ('?', '?')</query>
+  </Command>
+  <Command id="getConfigsForGrid">
+    <query> SELECT *, CONCAT(SUBSTRING(valor, 1, 300), "...") as valor2 FROM cat_configuraciones ?</query>
+  </Command>
+  <Command id="updateConfigGrid">
+    <query> UPDATE cat_configuraciones SET valor='@valor' WHERE idConfiguracion=@idConfiguracion</query>
+  </Command>
+
+
+  <!--Consultas registro de dispositivos -->
+  <Command id="insertarRegDispositivoDB">
+    <query>INSERT INTO registro_dispositivos (usuarioId, idRegDispositivo, activo, plataforma, fechaCreacion) VALUES (?, '?', '?', '?', '?')</query>
+  </Command>
+  <Command id="ObtRegDispositivoPorIdRegDB">
+    <query>SELECT * FROM registro_dispositivos WHERE idRegDispositivo='?' AND usuarioId=?</query>
+  </Command>
+  <Command id="obtTodosRegDispositivoPorIdUsrDB">
+    <query>SELECT * FROM registro_dispositivos WHERE activo=1 AND usuarioId=?</query>
+  </Command>
+  <Command id="ActRegActivoDB">
+    <query>UPDATE registro_dispositivos SET idRegDispositivo='?', activo='?', plataforma='?' WHERE idReg=?</query>
+  </Command>
+
+
+  <!-- Consultas configuracion menu -->
+  <Command id="ObtConfigMenuDB">
+    <query>SELECT * FROM cat_configmenu ?</query>
+  </Command>
+   <!--Consulta de Ayudas -->
+  <Command id="ObtAyudaPorIdDB">
+    <query>SELECT * FROM cat_ayudas WHERE idAyuda=?</query>
+  </Command>
+<Command id="ObtTodosCatAyudasDB">
+ <query>SELECT * FROM cat_ayudas ? ORDER BY idAyuda</query>
+</Command>
+
+<Command id="ObtAyudaPorAliasDB">
+ <query>SELECT * FROM cat_ayudas WHERE alias='?'</query>
+</Command>
+
+<Command id="updateAyudaPorAliasDB">
+    <query>UPDATE cat_ayudas SET ?='?' WHERE alias='?'</query>
+</Command>
+
+    <!--Consultas comunicados -->
+  <Command id="GetallComunicados">
+    <query>SELECT * FROM comunicados ? ORDER BY idComunicado DESC</query>
+  </Command>
+  <Command id="obtComunicadoPorIdDB">
+    <query>SELECT * FROM comunicados WHERE idComunicado=?</query>
+  </Command>
+  <Command id="insertComunicadoDB">
+   <query>INSERT INTO comunicados (titulo, descripcionCorta, contenido, opcTipo, activo, imgComunicado, fechaCreacion, urlComunicado, urlVideo) VALUES ('?', '?', '?', ?, ?, '?', '?', '?', '?')</query>
+  </Command>
+  <Command id="deleteComunicadosDB">
+   <query>DELETE FROM comunicados WHERE idComunicado=?</query>
+  </Command>
+  <Command id="updateComunicadoCampoDB">
+   <query>UPDATE comunicados SET ?='?' WHERE idComunicado=?</query>
+  </Command>
+
+  <Command id="updateComunicadoDB">
+   <query>UPDATE comunicados SET titulo='?', descripcionCorta='?', contenido='?', opcTipo='?', activo=?, idUsuarioCmb=?, fechaUltCambio='?', urlComunicado='?', urlVideo='?' WHERE idComunicado=?</query>
+  </Command>
+
+  <Command id="getComunicadoForGrid">
+    <query>SELECT * FROM comunicados</query>
+  </Command>
+  <!-- <Command id="updateComunicadoGrid">
+    <query>UPDATE comunicados SET titulo='@titulo', descripcionCorta='@descripcionCorta', contenido='@contenido', opcTipo='@opcTipo', urlVideo='@urlVideo', activo='@activo' WHERE idComunicado=@idComunicado</query>
+  </Command>
+  <Command id="deleteComunicadoGrid">
+    <query>DELETE FROM comunicados WHERE idComunicado=@idComunicado</query>
+  </Command> -->
+
+
+  <!--Consultas cat tipo casos -->
+  <Command id="ObtCatTipoCasosDB">
+   <query>SELECT * FROM cat_tipo_casos ?</query>
+  </Command>
+  <Command id="TipoCasoPorIdDB">
+    <query>SELECT * FROM cat_tipo_casos WHERE idTipo=?</query>
+  </Command>
+  <Command id="crearTipoCasoDB">
+   <query>INSERT INTO cat_tipo_casos (nombre, activo) VALUES ('?', '?')</query>
+  </Command>
+  <Command id="insTipoCasoGrid">
+   <query>INSERT INTO cat_tipo_casos (nombre, activo) VALUES ('@nombre', '@activo')</query>
+  </Command>
+  <Command id="actTipoCasoGrid">
+   <query>UPDATE cat_tipo_casos SET nombre='@nombre', activo='@activo' WHERE idTipo=@idTipo</query>
+  </Command>
+  <Command id="delTipoCasoGrid">
+     <query>DELETE FROM cat_tipo_casos WHERE idTipo=@idTipo</query>
+   </Command>
+
+
+  <!--Consultas cat conceptos -->
+  <Command id="ObtCatConceptosDB">
+   <query>SELECT * FROM cat_conceptos ?</query>
+  </Command>
+  <Command id="ConceptoPorIdDB">
+    <query>SELECT * FROM cat_conceptos WHERE idConcepto=?</query>
+  </Command>
+  <Command id="CrearConceptoDB">
+   <query>INSERT INTO cat_conceptos (nombre, activo) VALUES ('?', '?')</query>
+  </Command>
+  <Command id="insConceptoGrid">
+   <query>INSERT INTO cat_conceptos (tipo, nombre, activo) VALUES (@tipo, '@nombre', '@activo')</query>
+  </Command>
+  <Command id="actConceptoGrid">
+   <query>UPDATE cat_conceptos SET tipo=@tipo, nombre='@nombre', activo='@activo' WHERE idConcepto=@idConcepto</query>
+  </Command>
+  <Command id="delConceptoGrid">
+     <query>DELETE FROM cat_conceptos WHERE idConcepto=@idConcepto</query>
+   </Command>
+
+
+  <!--Consultas clientes -->
+  <Command id="ObtClientesDB">
+   <query>
+    SELECT c.*, 
+        CASE 
+            WHEN COUNT(ca.idCaso) &gt; 0 THEN 'none'
+            ELSE 'inline-block'
+            END AS 'showCasos'
+      FROM clientes c
+      LEFT JOIN casos ca ON c.idCliente = ca.clienteId
+      ?
+      GROUP BY c.idCliente
+  </query>
+  </Command>
+  <Command id="ClientePorIdDB">
+    <query>SELECT * FROM clientes WHERE idCliente=?</query>
+  </Command>
+  <Command id="CrearClienteDB">
+   <query>INSERT INTO clientes (nombre, telefono, email, direccion, empresa, aka, fechaCreacion) VALUES ('?', '?', '?', '?', '?', '?', '?');</query>
+  </Command>
+  <Command id="EditarClienteDB">
+   <query>UPDATE clientes SET nombre='?', telefono='?', email='?', direccion='?', empresa='?', aka='?',  fechaAct='?' WHERE idCliente=?</query>
+  </Command>
+  <Command id="insClienteGrid">
+   <query>INSERT INTO clientes (nombre, telefono, email, direccion, empresa, aka, fechaAct, fechaCreacion) VALUES ('@nombre', '@telefono', '@email', '@direccion', '@empresa', '@aka', NOW(), NOW())</query>
+  </Command>
+  <Command id="actClienteGrid">
+   <query>UPDATE clientes SET nombre='@nombre', telefono='@telefono', email='@email', direccion='@email', empresa='@empresa', aka='@aka', fechaAct=NOW() WHERE idCliente=@idCliente</query>
+  </Command>
+
+
+  <!--Consultas casos -->
+  <Command id="ObtCasosDB">
+    <query>
+      SELECT a.*, b.nombre AS cliente, c.nombre AS tipocaso, 
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(a.fechaAlta, "%w"))
+        , ' ', DATE_FORMAT(a.fechaAlta, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(a.fechaAlta, "%m"))
+        , ' ', DATE_FORMAT(a.fechaAlta, "%Y")
+        ) AS fechaAlta2, 
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(a.fechaAct, "%w"))
+        , ' ', DATE_FORMAT(a.fechaAct, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(a.fechaAct, "%m"))
+        , ' ', DATE_FORMAT(a.fechaAct, "%Y")
+        ) AS fechaAct2,
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(a.ultimaActividad, "%w"))
+        , ' ', DATE_FORMAT(a.ultimaActividad, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(a.ultimaActividad, "%m"))
+        , ' ', DATE_FORMAT(a.ultimaActividad, "%Y")
+        ) AS ultimaActividad2,
+      
+      d.nombre AS titular, d.numAbogado, DATE_FORMAT(a.fechaAlta, "%Y") as 'year', E.nombre AS titular2,
+      (SELECT DATEDIFF(NOW(), a.ultimaActividad )) AS 'diferenciaFecha',
+      CASE
+            WHEN a.saludExpediente=1 THEN "verde"
+            WHEN a.saludExpediente=2 THEN "amarillo"
+            WHEN a.saludExpediente=3 THEN "rojo"
+            ELSE ""
+      END AS clasesalud,
+      (SELECT COUNT(F.idAccion) FROM caso_acciones F WHERE F.casoId=a.idCaso AND F.leido=0 AND F.padreAccionId&gt;0) AS 'noLeidos',
+      (SELECT aka FROM clientes WHERE idCliente=a.clienteId) AS 'aka',
+      (SELECT planPagos FROM cuentas WHERE casoId = a.idCaso) AS 'modoCobro',
+      (SELECT COUNT(casoId) FROM digitales WHERE casoId=a.idCaso AND tipo = 1) AS 'escritos',
+      (SELECT COUNT(casoId) FROM digitales WHERE casoId=a.idCaso AND tipo = 2) AS 'expediente',
+      (SELECT COUNT(casoId) FROM digitales WHERE casoId=a.idCaso AND tipo = 3) AS 'audiencias',
+      (SELECT COUNT(casoId) FROM digitales WHERE casoId=a.idCaso AND tipo = 4) AS 'otros',
+      (SELECT COUNT(casoId) FROM digitales WHERE casoId=a.idCaso AND tipo = 5) AS 'audios',
+      (SELECT COUNT(casoId) FROM digitales WHERE casoId=a.idCaso) AS 'total',
+      (SELECT comentarios  FROM `caso_acciones` WHERE casoId = a.idCaso ORDER BY idAccion DESC LIMIT 1) AS 'ultActividad',
+      <!--CMPB, 10/02/2023 jalar el idAccion para el poppup del grid de inicio -->
+      (SELECT idAccion  FROM `caso_acciones` WHERE casoId = a.idCaso ORDER BY idAccion DESC LIMIT 1) AS 'idAccion',
+      (SELECT   
+          CONCAT(
+            (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(fechaCreacion, "%w"))
+            , ' ', DATE_FORMAT(fechaCreacion, "%d"), ' ',
+            (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(fechaCreacion, "%m"))
+            , ' ', DATE_FORMAT(fechaCreacion, "%Y")
+            )
+          FROM `caso_acciones` WHERE casoId = a.idCaso ORDER BY idAccion DESC LIMIT 1) AS 'fechaAltUtlActividad',
+      CASE 
+      	WHEN (SELECT COUNT(idCaso) FROM casos WHERE idPadre=a.idCaso) &gt; 0 THEN 'inline-block'
+        WHEN idPadre IS NOT NULL THEN 'inline-block'
+	      WHEN  idPadre!='0' THEN 'inline-block'
+        ELSE "none"
+      END AS 'showhijos',
+      CASE 
+      	WHEN (SELECT COUNT(clienteId) FROM casos WHERE clienteId=a.clienteId) &gt; 1 THEN 'inline-block'
+        ELSE "none"
+      END AS 'clientecasos',
+      (SELECT CONCAT(' A-', GROUP_CONCAT(DATE_FORMAT(fechaCompromiso, "%d/%b/%Y %k:%i") ORDER BY fechaCompromiso ASC SEPARATOR ', '))
+      FROM caso_acciones 
+        WHERE tipo IN (3) 
+        AND casoId = a.idCaso 
+        AND fechaCompromiso &gt;= CURDATE() 
+        GROUP BY casoId
+        ORDER BY fechaCompromiso)  AS ProxAud,
+      (SELECT CONCAT(' C-', GROUP_CONCAT(DATE_FORMAT(fechaCompromiso, "%d/%b/%Y %k:%i") ORDER BY fechaCompromiso ASC SEPARATOR ', '))
+      FROM caso_acciones 
+        WHERE tipo IN (5) 
+        AND casoId = a.idCaso 
+        AND fechaCompromiso &gt;= CURDATE() 
+        GROUP BY casoId
+        ORDER BY fechaCompromiso)  AS ProxCit,   
+      (SELECT CONCAT(' E-', GROUP_CONCAT(DATE_FORMAT(fechaCompromiso, "%d/%b/%Y %k:%i") ORDER BY fechaCompromiso ASC SEPARATOR ', '))
+      FROM caso_acciones 
+        WHERE tipo IN (7) 
+        AND casoId = a.idCaso 
+        AND fechaCompromiso &gt;= CURDATE() 
+        GROUP BY casoId
+        ORDER BY fechaCompromiso) AS ProxEscr,
+      CASE 
+       WHEN
+      (SELECT
+			GROUP_CONCAT(DATE_FORMAT(fechaCompromiso, "%d/%b/%Y %k:%i") ORDER BY fechaCompromiso ASC SEPARATOR ', ') 
+      FROM caso_acciones 
+        WHERE tipo IN (3,5,7) 
+        AND casoId = a.idCaso 
+        AND fechaCompromiso &gt;= CURDATE() 
+        GROUP BY casoId
+        ORDER BY fechaCompromiso) IS NOT NULL THEN 'inline-block'
+        ELSE "none"
+      END AS ProxAct,
+      F.nombre NombreJuzgado
+      FROM casos AS a
+      LEFT JOIN clientes AS b ON b.idCliente=a.clienteId
+      LEFT JOIN cat_tipo_casos AS c ON c.idTipo=a.tipoId
+      LEFT JOIN usuarios AS d ON d.idUsuario=a.responsableId
+      LEFT JOIN usuarios AS E ON E.idUsuario=a.titularId2
+      LEFT JOIN cat_juzgados AS F ON F.idJuzgado=a.juzgadoId
+      ?
+      ?
+      ?
+      ORDER BY a.idCaso
+    </query>
+  </Command>
+  <Command id="CasoPorIdDB">
+    <query>SELECT * FROM casos WHERE idCaso=?</query>
+  </Command>
+  <Command id="CasosHijosDB">
+    <query>SELECT * FROM casos WHERE idPadre=?</query>
+  </Command>
+  <Command id="CrearCasoDB">
+   <query>INSERT INTO casos (clienteId, tipoId, responsableId, autorizadosIds, descripcion, internos, usuarioAltaId, numExpediente, numExpedienteJuzgado, saludExpediente, titularId2, velocidad, contrario, estatusId, parteId, materiaId, juicioId, distritoId, juzgadoId, domicilioEmplazar, procesalId, contundencia, correonot, accionId, fechaAlta, fechaAct, representado, autorizadosJuzgados, cobro, nombreJuez, nombreSecretaria, fechaCreacion) VALUES (?, ?, ?, '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', ?, ?, '?', ?, '?', '?', '?', '?', '?', '?', '?', '?')</query>
+  </Command>
+  <Command id="EditarCasoDB">
+   <query>UPDATE casos SET clienteId=?, tipoId=?, responsableId=?, autorizadosIds='?', descripcion='?', internos='?', usuarioAltaId='?', numExpediente='?', numExpedienteJuzgado='?', saludExpediente='?', titularId2='?', velocidad='?', contrario='?', estatusId=?, parteId=?, materiaId=?, juicioId=?, distritoId=?, juzgadoId=?, domicilioEmplazar='?', procesalId=?, contundencia=?, correonot='?', accionId=?, fechaAlta='?', fechaAct='?', representado='?', autorizadosJuzgados='?', cobro='?', nombreJuez='?', nombreSecretaria='?' WHERE idCaso=?</query>
+  </Command>
+  <Command id="ActCampoCasoDB">
+    <query>UPDATE casos SET ?='?' WHERE idCaso=?</query>
+   </Command>
+  <!--<<<<<<<CMPB 14/02/2023, eliminar en null id padre y raiz-->
+   <Command id="ActCampoCasoDBNull">
+    <query>UPDATE casos SET ?=NULL WHERE idCaso=?</query>
+   </Command>
+   <Command id="verNumCasosCliente">
+    <query>SELECT COUNT(*) FROM casos WHERE clienteId=?</query>
+   </Command>
+   <Command id="EliminarClienteDB">
+    <query>DELETE FROM clientes WHERE idCliente=?</query>
+   </Command>
+
+   <Command id="EliminarNotaDB">
+    <query>DELETE FROM notas_voz WHERE idNotaVoz=?</query>
+   </Command>
+
+  <Command id="ObtCasoInfoPorId">
+    <query>
+        SELECT a.*, b.nombre AS cliente, c.nombre AS tipocaso, 
+	  e.nombre nombreMateria, f.nombre nombreDistrito, g.nombre nombreJuzgado,
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(a.fechaAlta, "%w"))
+        , ' ', DATE_FORMAT(a.fechaAlta, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(a.fechaAlta, "%m"))
+        ) AS fechaAlta2, 
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(a.fechaAct, "%w"))
+        , ' ', DATE_FORMAT(a.fechaAct, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(a.fechaAct, "%m"))
+        ) AS fechaAct2,
+      
+      d.nombre AS titular, d.numAbogado, DATE_FORMAT(a.fechaAlta, "%Y") as 'year'
+      FROM casos AS a
+      LEFT JOIN clientes AS b ON b.idCliente=a.clienteId
+      LEFT JOIN cat_tipo_casos AS c ON c.idTipo=a.tipoId
+      LEFT JOIN usuarios AS d ON d.idUsuario=a.responsableId
+      LEFT JOIN cat_materias AS e ON a.materiaId=e.idMateria
+      LEFT JOIN cat_distritos AS f ON a.distritoId=f.idDistrito
+      LEFT JOIN cat_juzgados AS g ON a.juzgadoId=g.idJuzgado
+      ?
+    </query>
+  </Command>
+  <Command id="ObtProxEventosCasoId">
+   <query>
+      SELECT 
+	  idAccion,
+      CASE
+          WHEN tipo = 3 THEN 'Audiencias'
+            WHEN tipo = 5 THEN 'Citaciones y Emplazamientos'
+            WHEN tipo = 7 THEN 'Escritos de Termino'
+            ELSE ''
+        END AS TipoTxt,
+      DATE_FORMAT(fechaCompromiso, "%d/%b/%Y %k:%i") fechaEvento,
+        comentarios
+    FROM caso_acciones 
+      WHERE tipo IN (3,5,7) 
+      AND casoId = ?
+      AND fechaCompromiso >= CURDATE() 
+      ORDER BY fechaCompromiso
+    </query>
+  </Command>
+  <Command id="GetPadreCasoArbol">
+    <query>
+     SELECT idPadreMain FROM casos where idCaso=?
+    </query>
+  </Command>
+  <Command id="datosCaso">
+    <query>
+     SELECT 
+              A.representado,
+              A.numExpedienteJuzgado,
+              A.juicioId,
+              A.parteId,
+              A.materiaId,
+              A.juzgadoId,
+              A.estatusId,
+              B.nombre parte,
+              C.nombre juicio,
+              D.nombre materia,
+              E.nombre juzgado
+            FROM casos A
+            LEFT JOIN cat_partes B ON A.parteId = B.idParte
+            LEFT JOIN cat_juicios C ON A.juicioId = C.idJuicio
+            LEFT JOIN cat_materias D ON A.materiaId = D.idMateria
+            LEFT JOIN cat_juzgados E ON A.juzgadoId = E.idJuzgado WHERE idCaso=?
+    </query>
+  </Command>
+  <Command id="GetCasoArbolPorRaiz">
+    <query>
+      SELECT 
+        idCaso, idPadre, idPadreMain,
+        representado,
+        numExpedienteJuzgado, estatusId
+        B.nombre parte,
+        C.nombre juicio,
+        D.nombre materia,
+        E.nombre juzgado,
+        (SELECT idCaso FROM casos C2 WHERE A.idCaso=C2.idPadre limit 1) as hijo,
+      CASE 
+        WHEN idPadre IS NULL   THEN '1'
+        WHEN idCaso IN (SELECT IdPadre FROM casos) THEN '2'
+        ELSE '3' END as posicion
+      FROM casos A
+      LEFT JOIN cat_partes B ON A.parteId = B.idParte
+      LEFT JOIN cat_juicios C ON A.juicioId = C.idJuicio
+      LEFT JOIN cat_materias D ON A.materiaId = D.idMateria
+      LEFT JOIN cat_juzgados E ON A.juzgadoId = E.idJuzgado
+      WHERE idPadreMain=? OR idCaso=? 
+      ORDER BY idPadre,idCaso
+    </query>
+  </Command>
+  <Command id="obtenerHijos">
+    <query>
+    SELECT * ,
+    (select idCaso from casos c2 where c.idCaso =c2.idPadre limit 1) as hijo 
+    FROM casos c WHERE idPadre=?;
+    </query>
+  </Command>
+  <Command id="obtenerIdPadreMain">
+    <query>
+      SELECT idPadreMain FROM casos where idCaso=?;
+    </query>
+  </Command>
+  <Command id="verSiEsPadre">
+    <query>
+    SELECT * FROM casos WHERE idPadre =?;
+    </query>
+  </Command>
+  <Command id="obtenerEstadisticaExpedientesDB">
+    <query>
+    SELECT 
+    COUNT(DISTINCT idCaso) AS 'totalCasos',
+    COUNT(DISTINCT clienteId) AS 'totalClientes',
+    ROUND(COUNT(DISTINCT idCaso)/COUNT(DISTINCT clienteId),2) AS 'promedioPorcliente',
+    SUM(titularId2 = 23) AS 'totalJesus',
+    SUM(titularId2 = 21) AS 'totalAlma'
+    FROM casos
+    WHERE estatusId IN(1,5);
+    </query>
+  </Command>
+  <Command id="expedientesPorabogadoDB">
+    <query>
+    SELECT 
+      B.nombre,
+      A.responsableId,
+      COUNT(A.idCaso) CasosTotal
+      FROM casos AS A
+      LEFT JOIN usuarios AS B ON B.idUsuario = A.responsableId
+      WHERE A.estatusId IN(1,5)
+      GROUP BY A.responsableId
+    </query>
+  </Command>
+  <!--Consultas caso acciones -->
+  <Command id="GridActividadesDB">
+   <query>
+      SELECT A.*, DATE_FORMAT(A.fechaAlta, "%d/%m/%Y") AS fechaAlta2,
+      B.numAbogado,B.nombre nombreAbogado, C.numExpediente,D.nombre nombreCliente, C.idCaso,
+      C.numExpedienteJuzgado, C.titularId2, E.nombre AS NombreTitular,
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaCreacion, "%w"))
+        , ' ', DATE_FORMAT(A.fechaCreacion, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaCreacion, "%m")) 
+        , ' ', DATE_FORMAT(A.fechaCreacion, "%Y")
+        ) AS fechaCreacion2,
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaCompromiso, "%w"))
+        , ' ', DATE_FORMAT(A.fechaCompromiso, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaCompromiso, "%m")) 
+        , ' ', DATE_FORMAT(A.fechaCompromiso, "%Y")
+        ) AS fechaCompromiso2,
+        CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaRealizado, "%w"))
+        , ' ', DATE_FORMAT(A.fechaRealizado, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaRealizado, "%m")) 
+        , ' ', DATE_FORMAT(A.fechaRealizado, "%Y")
+        ) AS fechaRealizado2,
+        CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaAct, "%w"))
+        , ' ', DATE_FORMAT(A.fechaAct, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaAct, "%m")) 
+        , ' ', DATE_FORMAT(A.fechaAct, "%Y")
+        ) AS fechaAct2,
+        DATEDIFF(A.fechaCompromiso, A.fechaRealizado)*-1 AS diferenciaTerminado,
+        (SELECT DATEDIFF(A.fechaCompromiso, NOW())) AS 'diferenciaFecha', 
+         CASE
+            WHEN A.estatusId&lt;4 AND (SELECT diferenciaFecha) &gt;=0 AND (SELECT diferenciaFecha)&lt;5 THEN "porvencer"
+            WHEN A.estatusId&lt;4 AND (SELECT diferenciaFecha) &lt;0 THEN "vencida"
+            ELSE ""
+        END AS clasevencido,
+      CASE
+            WHEN A.importancia = 1 THEN "Normal"
+            WHEN A.importancia = 2 THEN "Media"
+            WHEN A.importancia = 3 THEN "Alta"
+            ELSE ""
+        END AS importanciaTexto,
+    CASE
+      		WHEN A.tipo = 1 THEN "De fondo"
+            WHEN A.tipo = 2 THEN "Seguimiento"
+            WHEN A.tipo = 3 THEN "Audiencias"
+            WHEN A.tipo = 4 THEN "Término"
+            WHEN A.tipo = 5 THEN "Citaciones y Emplazamientos"
+            ELSE ""
+      END AS tipoTexto
+      ?
+      FROM caso_acciones A 
+      LEFT JOIN usuarios B ON A.responsableId=B.idUsuario
+      LEFT JOIN casos C ON A.casoId=C.idCaso
+      LEFT JOIN clientes D ON C.clienteId = D.idCliente
+      LEFT JOIN usuarios AS E ON E.idUsuario=C.titularId2
+      ?
+      ORDER BY A.fechaCompromiso ASC
+  </query>
+  </Command>
+  
+  <Command id="ObtCasoAccionesDB">
+   <query>
+      SELECT A.*, DATE_FORMAT(A.fechaAlta, "%d/%m/%Y") AS fechaAlta2,
+      B.numAbogado,
+      CASE
+      		WHEN A.avanzo = 0 THEN "No" 
+          WHEN A.avanzo = 1 THEN "Si" 
+      END AS avanzo2
+      FROM caso_acciones A 
+      LEFT JOIN usuarios B ON A.usuarioId=B.idUsuario
+      ?
+      ?
+  </query>
+  </Command>
+
+  <Command id="ObtCasoAccionesGridDB">
+   <query>
+      SELECT A.*, 
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaAlta, "%w"))
+        , ' ', DATE_FORMAT(A.fechaAlta, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaAlta, "%m")) 
+        , ' ', DATE_FORMAT(A.fechaAlta, "%Y")
+        ) AS fechaAlta2,
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaCompromiso, "%w"))
+        , ' ', DATE_FORMAT(A.fechaCompromiso, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaCompromiso, "%m")) 
+        , ' ', DATE_FORMAT(A.fechaCompromiso, "%Y")
+        ) AS fechaCompromiso2,
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaRealizado, "%w"))
+        , ' ', DATE_FORMAT(A.fechaRealizado, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaRealizado, "%m")) 
+        , ' ', DATE_FORMAT(A.fechaRealizado, "%Y")
+        ) AS fechaRealizado2,
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaAct, "%w"))
+        , ' ', DATE_FORMAT(A.fechaAct, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaAct, "%m")) 
+        , ' ', DATE_FORMAT(A.fechaAct, "%Y")
+        ) AS fechaAct2,    
+      B.numAbogado,
+      A.comentarios AS 'comentarios2',  
+      CASE
+      		WHEN A.avanzo = 0 THEN "No" 
+          WHEN A.avanzo = 1 THEN "Si" 
+      END AS avanzo2,
+      (SELECT COUNT(C.idAccion) FROM caso_acciones C WHERE C.padreAccionId=A.idAccion AND C.leido=0 ?) AS 'noLeidos'
+      FROM caso_acciones A 
+      LEFT JOIN usuarios B ON A.responsableId=B.idUsuario
+      ?
+
+      
+
+      ?
+  </query>
+  </Command>
+
+  <Command id="ObtenerAgendaDB">
+    <query>
+      SELECT A.*, B.numExpediente, 
+        B.numExpedienteJuzgado, C.nombre AS 'nombreCliente',
+        B.akaAsunto,
+        CASE
+          WHEN B.titularId2 = 21 THEN "A"
+          WHEN B.titularId2 = 23 THEN "J"
+        END AS 'TitularID',
+        C.aka,
+        D.nombre AS 'materia',
+        E.nombre AS 'distrito',
+        F.nombre AS 'juzgado',
+        G.nombre AS 'responsable',
+        H.nombre AS 'creador'
+      FROM caso_acciones AS A
+        LEFT JOIN casos AS B ON B.idCaso = A.casoId
+        LEFT JOIN clientes AS C ON C.idCliente = B.clienteId
+        LEFT JOIN cat_materias AS D ON D.idMateria = B.materiaId
+        LEFT JOIN cat_distritos AS E ON E.idDistrito = B.distritoId
+        LEFT JOIN cat_juzgados AS F ON F.idJuzgado = B.juzgadoId
+        LEFT JOIN usuarios AS G ON G.idUsuario = A.responsableId
+        LEFT JOIN usuarios AS H ON H.idUsuario = A.usuarioId
+      WHERE  
+      fechaCompromiso BETWEEN DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND DATE_ADD(CURDATE(), INTERVAL 90 DAY)
+      ? ?
+      ORDER BY fechaCompromiso
+    </query>
+  </Command>
+
+  <Command id="CasoAccionesPorIdDB">
+    <query>SELECT *, DATE_FORMAT(fechaAlta, "%d/%m/%Y") AS fechaAlta2 FROM caso_acciones WHERE idAccion=?</query>
+  </Command>
+  <Command id="CasoAccionesObtenerIdPadre">
+    <query>SELECT padreAccionId FROM caso_acciones where idAccion=?</query>
+  </Command>
+  <Command id="CrearCasoAccionDB">
+   <query>INSERT INTO caso_acciones (usuarioId, casoId, tipo, importancia, nombre, comentarios, internos, reporte, padreAccionId, estatusId, fechaCompromiso, fechaRealizado, fechaAlta, responsableId, avanzo) VALUES (?, ?, '?', '?', '?', '?', '?', '?', ?, '?', ?, ?, '?', ?, ?)</query>
+  </Command>
+  <Command id="EditarCasoAccionDB">
+   <query>UPDATE caso_acciones SET usuarioId=?, casoId=?, tipo=?, importancia='?', nombre='?', comentarios='?', internos='?', reporte='?', padreAccionId=?, estatusId=?, fechaCompromiso=?, fechaRealizado=?, fechaAlta='?', responsableId=?, avanzo=?, fechaAct='?' WHERE idAccion=?</query>
+  </Command>
+  <Command id="EliminarAccionDB">
+    <query>DELETE FROM caso_acciones ?</query>
+  </Command>
+  <Command id="EliminarCitaDB">
+    <query>DELETE FROM caso_acciones WHERE idAccion=?</query>
+  </Command>
+  <Command id="EliminarCitaSerieDB">
+    <query>DELETE FROM caso_acciones WHERE padreAccionId=?</query>
+  </Command>
+  <Command id="ActCampoAccionDB">
+   <query>UPDATE caso_acciones SET ?='?' WHERE idAccion=?</query>
+  </Command>
+
+
+  <!--Consultas accion gstos -->
+  <Command id="ObtAccionGastosDB">
+   <query>
+      SELECT a.*, b.nombre AS concepto, DATE_FORMAT(a.fechaAlta, "%d/%m/%Y") AS fechaAlta2, CONCAT("$", FORMAT(a.monto, 2)) AS monto2
+      FROM accion_gastos AS a
+      LEFT JOIN cat_conceptos AS b ON b.idConcepto=a.conceptoId
+      ?
+    </query>
+  </Command>
+  <Command id="AccionGastosPorIdDB">
+    <query>SELECT *, DATE_FORMAT(fechaAlta, "%d/%m/%Y") AS fechaAlta2 FROM accion_gastos WHERE idGasto=?</query>
+  </Command>
+  <Command id="CrearAccionGastoDB">
+   <query>INSERT INTO accion_gastos (casoId, accionId, conceptoId, monto, fechaAlta, fechaAct, fechaCreacion) VALUES (?, ?, ?, ?, '?', '?', '?')</query>
+  </Command>
+  <Command id="EditarAccionGastoDB">
+   <query>UPDATE accion_gastos SET casoId=?, accionId=?, conceptoId=?, monto=?, fechaAlta='?', fechaAct='?' WHERE idGasto=?</query>
+  </Command>
+  <Command id="EliminarGastoDB">
+    <query>DELETE FROM accion_gastos ?</query>
+  </Command>
+
+   <!--Consultas conceptos -->
+   <Command id="ObtTodasConceptosDB">
+    <query> SELECT *  FROM conceptos ? ?</query>
+   </Command>
+   <Command id="ConceptoByID">
+    <query>SELECT * FROM conceptos WHERE idConcepto=?</query>
+   </Command>
+   <Command id="ObtConceptoByCondominoYMensualidadDB">
+    <query>SELECT * FROM conceptos WHERE condominoId=? AND fechaMensualidad='?' AND tipoId=1</query>
+   </Command>
+   
+   <Command id="insertConceptoDB">
+    <query> INSERT INTO conceptos(tipoId, usuarioId, catConceptoId, descripcion, monto, saldo, fecha, comprobante) VALUES(?, ?, ?, '?', ?, ?, '?', '?')</query>
+   </Command>
+
+   <Command id="obtenerFechaMensualidadDB">
+    <query>
+    <!-- SELECT
+   (SELECT fechaMensualidad FROM conceptos WHERE condominoId=21 AND tipoId=1 ORDER BY idConcepto DESC LIMIT 1) AS 'fechaUltimaMensualidad',
+  IF((SELECT fechaUltimaMensualidad) IS NOT NULL, DATE(DATE_ADD((SELECT fechaUltimaMensualidad), INTERVAL 1 MONTH)), '') AS 'fechaProximaMensualidad',
+  DATE(DATE_ADD((SELECT fechaEntrega FROM cat_viviendas WHERE idVivienda=3), INTERVAL 1 MONTH)) AS 'fechaPrimeraMensualidad' 
+  -->
+    SELECT
+    (SELECT fechaMensualidad FROM conceptos WHERE condominoId=? AND tipoId=1 ORDER BY idConcepto DESC LIMIT 1) AS 'fechaUltimaMensualidad',
+    IF((SELECT fechaUltimaMensualidad) IS NOT NULL, DATE(DATE_ADD((SELECT fechaUltimaMensualidad), INTERVAL 1 MONTH)), '') AS 'fechaProximaMensualidad',
+    DATE(DATE_ADD((SELECT fechaEntrega FROM cat_viviendas WHERE idVivienda=?), INTERVAL 1 MONTH)) AS 'fechaPrimeraMensualidad',
+    IF((SELECT fechaProximaMensualidad) != '',  DATE_ADD((SELECT fechaProximaMensualidad), INTERVAL 5 DAY), 
+    DATE_ADD((SELECT fechaPrimeraMensualidad), INTERVAL 5 DAY)) AS 'fechaLimite'
+    </query>
+   </Command>
+
+   <Command id="obtenerSaldoAntesDeRecargoDB">
+    <query>
+    SELECT saldo FROM conceptos WHERE condominoId=? AND tipoId IN (1,3) ORDER BY idConcepto DESC LIMIT 1
+    </query>
+   </Command>
+
+   <Command id="ObtenerCondominosParaProximosAMensualidadDB">
+    <query>
+    SELECT 
+    A.*,
+    (SELECT fechaMensualidad FROM conceptos WHERE condominoId=A.idCondomino AND tipoId=1 ORDER BY idConcepto DESC LIMIT 1) AS 'fechaUltimaMensualidad',
+        IF((SELECT fechaUltimaMensualidad) IS NOT NULL, DATE(DATE_ADD((SELECT fechaUltimaMensualidad), INTERVAL 1 MONTH)), '') AS 'fechaProximaMensualidad',
+        DATE(DATE_ADD((SELECT fechaEntrega FROM cat_viviendas WHERE idVivienda=A.idVivienda), INTERVAL 1 MONTH)) AS 'fechaPrimeraMensualidad',
+        IF((SELECT fechaProximaMensualidad) != '',  DATE_ADD((SELECT fechaProximaMensualidad), INTERVAL 5 DAY), 
+        DATE_ADD((SELECT fechaPrimeraMensualidad), INTERVAL 5 DAY)) AS 'fechaLimite',
+        IF((SELECT fechaProximaMensualidad) != '',  (SELECT fechaProximaMensualidad), 
+        (SELECT fechaPrimeraMensualidad)) AS 'fechaMensualidad',
+        DATE_ADD(DATE_FORMAT(NOW(), "%Y-%m-%d"), INTERVAL ? DAY) AS 'fechaConsulta',
+        B.idUsuario
+    FROM cat_condominos A
+    LEFT JOIN usuarios B ON B.idCondomino=A.idCondomino
+    HAVING (SELECT fechaMensualidad)=(SELECT fechaConsulta) ?
+     </query>
+   </Command>
+
+   <Command id="ObtenerCondominosParaRecargoDB">
+    <query>
+    SELECT 
+    A.*,
+    (SELECT fechaMensualidad FROM conceptos WHERE condominoId=A.idCondomino AND tipoId=1 ORDER BY idConcepto DESC LIMIT 1) AS 'fechaUltimaMensualidad',
+        IF((SELECT fechaUltimaMensualidad) IS NOT NULL, DATE(DATE_ADD((SELECT fechaUltimaMensualidad), INTERVAL 1 MONTH)), '') AS 'fechaProximaMensualidad',
+        DATE(DATE_ADD((SELECT fechaEntrega FROM cat_viviendas WHERE idVivienda=A.idVivienda), INTERVAL 1 MONTH)) AS 'fechaPrimeraMensualidad',
+        (SELECT fechaLimite FROM conceptos WHERE condominoId=A.idCondomino AND tipoId=1 ORDER BY idConcepto DESC LIMIT 1) AS 'fechaLimite',
+        IF((SELECT fechaProximaMensualidad) != '',  (SELECT fechaProximaMensualidad), 
+        (SELECT fechaPrimeraMensualidad)) AS 'fechaMensualidad',
+        B.idUsuario
+    FROM cat_condominos A
+    LEFT JOIN usuarios B ON B.idCondomino=A.idCondomino
+    HAVING (SELECT fechaLimite)= '?' AND A.saldo > 0 ?
+    </query>
+   </Command>
+
+    <Command id="obtenerUlimaMensualidadDB">
+      <query>
+      SELECT * FROM conceptos WHERE condominoId=? AND tipoId IN (?) ORDER BY idConcepto DESC LIMIT 1
+      </query>
+    </Command>
+
+    <Command id="updateCampoConceptoDB">
+       <query> UPDATE conceptos SET ?='?' WHERE idConcepto=?</query>
+   </Command>
+
+   <Command id="getConceptosForGrid">
+      <query>
+      SELECT A.*, DATE_FORMAT(A.fechaCreacion, "%d/%m/%Y") AS 'fechaCreacion2', B.nombre AS 'condomino', B.saldo AS saldo2 
+      FROM conceptos A
+      LEFT JOIN cat_condominos B ON A.condominoId=B.idCondomino
+      ? ?
+      </query>
+    </Command>
+
+    <Command id="fechasGastosDB">
+      <query>
+      SELECT 
+      WEEK(NOW()) AS 'semana', 
+      YEAR(NOW()) AS 'anio',
+      SUBDATE((STR_TO_DATE(CONCAT(YEAR(NOW()), ' ', WEEK(NOW()), ' Monday'), '%x %v %W')),INTERVAL 2 DAY) AS 'last_sat',
+      STR_TO_DATE(CONCAT(YEAR(NOW()), ' ', WEEK(NOW()), ' Saturday'), '%x %v %W') AS 'next_sat',
+      DATE_FORMAT((SELECT last_sat),'%W %d %M %Y') AS 'last_completa',
+      DATE_FORMAT((SELECT next_sat),'%W %d %M %Y') AS 'next_completa'
+      </query>
+    </Command>
+
+    <Command id="fechasGastos2DB">
+      <query>
+      SELECT 
+      WEEK(NOW()) AS 'semana', 
+      YEAR(NOW()) AS 'anio',
+      SUBDATE((STR_TO_DATE(CONCAT(YEAR(NOW()), ' ', WEEK(NOW()), ' Monday'), '%x %v %W')),INTERVAL 2 DAY) AS 'last_sat',
+      STR_TO_DATE(CONCAT(YEAR(NOW()), ' ', WEEK(NOW()), ' Saturday'), '%x %v %W') AS 'next_sat',
+      DATE_FORMAT((SELECT last_sat),'%W %d %M %Y') AS 'last_completa',
+      DATE_FORMAT((SELECT next_sat),'%W %d %M %Y') AS 'next_completa'
+      </query>
+    </Command>
+
+    <!--Consultas cat_partes -->
+  <Command id="ObtPartesDB">
+    <query>SELECT * FROM cat_partes ? ?</query>
+  </Command>
+  <Command id="PartePorIdDB">
+    <query>SELECT * FROM cat_partes WHERE idParte=?</query>
+  </Command>
+  <Command id="ActCampoParteDB">
+    <query>UPDATE cat_partes SET ?='?' WHERE idParte=?</query>
+  </Command>
+  <Command id="insParteGrid">
+    <query>INSERT INTO cat_partes (nombre, activo, fechaCreacion) VALUES ('@nombre', '@activo', NOW())</query>
+  </Command>
+  <Command id="actParteGrid">
+    <query>UPDATE cat_partes SET nombre='@nombre', activo='@activo', fechaAct=NOW() WHERE idParte=@idParte</query>
+  </Command>
+  <Command id="delParteGrid">
+    <query>DELETE FROM cat_partes WHERE idParte=@idParte</query>
+  </Command>
+  <Command id="insertParteDB">
+    <query>INSERT INTO cat_partes (nombre, activo, fechaCreacion) VALUES ('?', '?', '?')</query>
+  </Command>
+
+  <!--Consultas cat_materias -->
+  <Command id="ObtMateriasDB">
+    <query>SELECT * FROM cat_materias ? ?</query>
+  </Command>
+  <Command id="MateriaPorIdDB">
+    <query>SELECT * FROM cat_materias WHERE idMateria=?</query>
+  </Command>
+  <Command id="ActCampoMateriaDB">
+    <query>UPDATE cat_materias SET ?='?' WHERE idMateria=?</query>
+  </Command>
+  <Command id="insMateriaGrid">
+    <query>INSERT INTO cat_materias (nombre, activo, tieneAcciones, fechaCreacion) VALUES ('@nombre', '@activo', @tieneAcciones, NOW())</query>
+  </Command>
+  <Command id="actMateriaGrid">
+    <query>UPDATE cat_materias SET nombre='@nombre', activo='@activo', tieneAcciones=@tieneAcciones, fechaAct=NOW() WHERE idMateria=@idMateria</query>
+  </Command>
+  <Command id="delMateriaGrid">
+    <query>DELETE FROM cat_materias WHERE idMateria=@idMateria</query>
+  </Command>
+  <Command id="insertMateriaDB">
+    <query>INSERT INTO cat_materias (nombre, activo, fechaCreacion) VALUES ('?', '?', '?')</query>
+  </Command>
+
+  <!--Consultas cat_juicios -->
+  <Command id="ObtJuiciosDB">
+    <query>SELECT * FROM cat_juicios ? ?</query>
+  </Command>
+  <Command id="JuicioPorIdDB">
+    <query>SELECT * FROM cat_juicios WHERE idJuicio=?</query>
+  </Command>
+  <Command id="ActCampoJuicioDB">
+    <query>UPDATE cat_juicios SET ?='?' WHERE idJuicio=?</query>
+  </Command>
+  <Command id="insJuicioGrid">
+    <query>INSERT INTO cat_juicios (materiaId, nombre, activo, fechaCreacion) VALUES (@materiaId, '@nombre', '@activo', NOW())</query>
+  </Command>
+  <Command id="actJuicioGrid">
+    <query>UPDATE cat_juicios SET materiaId=@materiaId, nombre='@nombre', activo='@activo', fechaAct=NOW() WHERE idJuicio=@idJuicio</query>
+  </Command>
+  <Command id="delJuicioGrid">
+    <query>DELETE FROM cat_juicios WHERE idJuicio=@idJuicio</query>
+  </Command>
+  <Command id="insertJuicioDB">
+    <query>INSERT INTO cat_juicios (nombre, activo, fechaCreacion) VALUES ('?', '?', '?')</query>
+  </Command>
+
+  <!--Consultas cat_distritos -->
+  <Command id="ObtDistritosDB">
+    <query>SELECT * FROM cat_distritos ?</query>
+  </Command>
+  <Command id="DistritoPorIdDB">
+    <query>SELECT * FROM cat_distritos WHERE idDistrito=?</query>
+  </Command>
+  <Command id="ActCampoDistritoDB">
+    <query>UPDATE cat_distritos SET ?='?' WHERE idDistrito=?</query>
+  </Command>
+  <Command id="insDistritoGrid">
+    <query>INSERT INTO cat_distritos (nombre, activo, fechaCreacion) VALUES ('@nombre', '@activo', NOW())</query>
+  </Command>
+  <Command id="actDistritoGrid">
+    <query>UPDATE cat_distritos SET nombre='@nombre', activo='@activo', fechaAct=NOW() WHERE idDistrito=@idDistrito</query>
+  </Command>
+  <Command id="delDistritoGrid">
+    <query>DELETE FROM cat_distritos WHERE idDistrito=@idDistrito</query>
+  </Command>
+  <Command id="insertDistritoDB">
+    <query>INSERT INTO cat_distritos (nombre, activo, fechaCreacion) VALUES ('?', '?', '?')</query>
+  </Command>
+
+  <!--Consultas cat_juzgados -->
+  <Command id="ObtJuzgadosDB">
+    <query> SELECT * FROM cat_juzgados ? ? </query>
+  </Command>
+  <Command id="JuzgadoPorIdDB">
+    <query>SELECT * FROM cat_juzgados WHERE idJuzgado=?</query>
+  </Command>
+  <Command id="ActCampoJuzgadoDB">
+    <query>UPDATE cat_juzgados SET ?='?' WHERE idJuzgado=?</query>
+  </Command>
+  <Command id="insJuzgadoGrid">
+    <query>INSERT INTO cat_juzgados (distritoId, nombre, activo, fechaCreacion) VALUES (@distritoId, '@nombre', '@activo', NOW())</query>
+  </Command>
+  <Command id="actJuzgadoGrid">
+    <query>UPDATE cat_juzgados SET distritoId=@distritoId, nombre='@nombre', activo='@activo', fechaAct=NOW() WHERE idJuzgado=@idJuzgado</query>
+  </Command>
+  <Command id="delJuzgadoGrid">
+    <query>DELETE FROM cat_juzgados WHERE idJuzgado=@idJuzgado</query>
+  </Command>
+  <Command id="insertJuzgadoDB">
+    <query>INSERT INTO cat_juzgados (nombre, activo, fechaCreacion) VALUES ('?', '?', '?')</query>
+  </Command>
+  
+  <!--Consultas cat_contactos -->
+  <Command id="ObtContactosDB">
+    <query>SELECT * FROM cat_contactos ?</query>
+  </Command>
+  <Command id="ContactoPorIdDB">
+    <query>SELECT * FROM cat_contactos WHERE idContacto=?</query>
+  </Command>
+  <Command id="ActCampoContactoDB">
+    <query>UPDATE cat_contactos SET ?='?' WHERE idContacto=?</query>
+  </Command>
+  <Command id="insContactoGrid">
+    <query>INSERT INTO cat_contactos (nombre, activo, fechaCreacion) VALUES ('@nombre', '@activo', NOW())</query>
+  </Command>
+  <Command id="actContactoGrid">
+    <query>UPDATE cat_contactos SET nombre='@nombre', activo='@activo', fechaAct=NOW() WHERE idContacto=@idContacto</query>
+  </Command>
+  <Command id="delContactoGrid">
+    <query>DELETE FROM cat_contactos WHERE idContacto=@idContacto</query>
+  </Command>
+  <Command id="insertContactoDB">
+    <query>INSERT INTO cat_contactos (casoId, nombre, telefono, email, domicilio,  notas) VALUES (?, '?', '?', '?', '?', '?')</query>
+  </Command>
+
+  <Command id="EditarContactoDB">
+    <query>
+    UPDATE cat_contactos SET casoId=?, nombre='?', telefono='?', email='?', domicilio='?',  notas='?' WHERE idContacto=?
+    </query>
+  </Command>
+
+  <!--Consultas mensajes -->
+    <Command id="GetallMensajesObj">
+     <query>
+        SELECT a.*, b.nombre, b.idRol FROM mensajes AS a 
+        LEFT JOIN usuarios AS b on b.idUsuario=a.usuarioId
+        ? ORDER BY a.fechaCreacion ?
+      </query>
+    </Command>
+    <Command id="GetAllMensajesObjByRptDB">
+     <query>SELECT * FROM mensajes ? ORDER BY fechaCreacion ASC</query>
+    </Command>
+    <Command id="obtenerMensajesObjById">
+     <query>SELECT * FROM mensajes WHERE idMensaje=?</query>
+    </Command>
+    <Command id="insertMensajesDB">
+      <query>
+        INSERT INTO mensajes (usuarioId, leido, mostrar, titulo, contenido, tipo, idRegistro, usuarioIdAlta) VALUES (?, ?, ?, '?', '?', ?, ?, ?)
+      </query>
+    </Command>
+    <Command id="deleteMensajesDB">
+      <query>DELETE FROM mensajes WHERE idMensaje=?</query>
+    </Command>
+    <Command id="ObtTodosMensajesDB">
+      <query>SELECT *,DATE_FORMAT(fechaCreacion, "%d/%m/%Y") AS 'fechaCreacion2' FROM mensajes ? ?</query>
+    </Command>
+    <Command id="ActualizarMensajeDB">
+      <query>UPDATE mensajes SET ?='?' WHERE idMensaje=?</query>
+    </Command>
+
+    <!--Consultas cat_acciones -->
+  <Command id="ObtAccionesDB">
+    <query>SELECT * FROM cat_acciones ? ?</query>
+  </Command>
+  <Command id="AccionPorIdDB">
+    <query>SELECT * FROM cat_acciones WHERE idAccion=?</query>
+  </Command>
+  <Command id="ActCampoAccionDB">
+    <query>UPDATE cat_acciones SET ?='?' WHERE idAccion=?</query>
+  </Command>
+  <Command id="insAccionGrid">
+    <query>INSERT INTO cat_acciones (materiaId, nombre, activo, fechaCreacion) VALUES (@materiaId, '@nombre', '@activo', NOW())</query>
+  </Command>
+  <Command id="actAccionGrid">
+    <query>UPDATE cat_acciones SET materiaId=@materiaId, nombre='@nombre', activo='@activo', fechaAct=NOW() WHERE idAccion=@idAccion</query>
+  </Command>
+  <Command id="delAccionGrid">
+    <query>DELETE FROM cat_acciones WHERE idAccion=@idAccion</query>
+  </Command>
+  <Command id="insertAccionDB">
+    <query>INSERT INTO cat_acciones (nombre, activo, fechaCreacion) VALUES ('?', '?', '?')</query>
+  </Command>
+
+   <!--Consultas cat_documentos -->
+  <Command id="ObtCatDocumentosDB">
+    <query>SELECT * FROM cat_documentos ?</query>
+  </Command>
+  <Command id="DocumentoPorIdDB">
+    <query>SELECT * FROM cat_documentos WHERE idDocumento=?</query>
+  </Command>
+  <Command id="ActCampoDocumentoDB">
+    <query>UPDATE cat_documentos SET ?='?' WHERE idDocumento=?</query>
+  </Command>
+  <Command id="insDocumentoGrid">
+    <query>INSERT INTO cat_documentos (casoId, nombre, fechaRecepcion, fechaRetorno) VALUES ('@nombre', '@activo', NOW())</query>
+  </Command>
+  <Command id="actDocumentoGrid">
+    <query>UPDATE cat_documentos SET nombre='@nombre', activo='@activo', fechaAct=NOW() WHERE idDocumento=@idDocumento</query>
+  </Command>
+  <Command id="delDocumentoGrid">
+    <query>DELETE FROM cat_documentos WHERE idDocumento=@idDocumento</query>
+  </Command>
+  <Command id="CrearDocumentoDB">
+    <query>INSERT INTO cat_documentos (casoId, nombre, condiciones, fechaRecepcion, fechaRetorno) VALUES (?, '?', '?', ?, ? )</query>
+  </Command>
+
+
+  <!--Consultas tareas -->
+  <Command id="GridTareasActividadesDB">
+   <query>
+      SELECT A.*, DATE_FORMAT(A.fechaAlta, "%d/%m/%Y") AS fechaAlta2,
+      B.numAbogado,B.nombre nombreCreador,C.nombre nombreResponsable,
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaCompromiso, "%w"))
+        , ' ', DATE_FORMAT(A.fechaCompromiso, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaCompromiso, "%m")) 
+        , ' ', DATE_FORMAT(A.fechaCompromiso, "%Y")
+        ) AS fechaCompromiso2,
+        CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaRealizado, "%w"))
+        , ' ', DATE_FORMAT(A.fechaRealizado, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaRealizado, "%m")) 
+        , ' ', DATE_FORMAT(A.fechaRealizado, "%Y")
+        ) AS fechaRealizado2,
+        DATEDIFF(A.fechaCompromiso, A.fechaRealizado)*-1 AS diferenciaTerminado,
+        (SELECT DATEDIFF(A.fechaCompromiso, NOW())) AS 'diferenciaFecha', 
+         CASE
+            WHEN A.estatusId&lt;4 AND (SELECT diferenciaFecha) &gt;=0 AND (SELECT diferenciaFecha)&lt;5 THEN "porvencer"
+            WHEN A.estatusId&lt;4 AND (SELECT diferenciaFecha) &lt;0 THEN "vencida"
+            ELSE ""
+        END AS clasevencido,
+      CASE
+            WHEN A.importancia = 1 THEN "Normal"
+            WHEN A.importancia = 2 THEN "Media"
+            WHEN A.importancia = 3 THEN "Alta"
+            ELSE ""
+        END AS importanciaTexto,
+    CASE
+      		WHEN A.tipo = 1 THEN "Administrativa"
+            WHEN A.tipo = 2 THEN "Otros"
+           
+            ELSE ""
+      END AS tipoTexto
+      ?
+      FROM tareas A 
+      LEFT JOIN usuarios B ON A.usuarioId=B.idUsuario
+      LEFT JOIN usuarios C ON A.responsableId=C.idUsuario
+      
+      ?
+      ORDER BY A.fechaCompromiso ASC
+  </query>
+  </Command>
+  
+  <Command id="ObtTareasDB">
+   <query>
+      SELECT A.*, 
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaAlta, "%w"))
+        , ' ', DATE_FORMAT(A.fechaAlta, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaAlta, "%m"))
+        , ' ', DATE_FORMAT(A.fechaAlta, "%Y")
+        ) AS fechaAlta2,
+      B.numAbogado
+      FROM tareas A 
+      LEFT JOIN usuarios B ON A.usuarioId=B.idUsuario
+      ?
+      ?
+  </query>
+  </Command>
+
+  <Command id="ObtTareasGridDB">
+   <query>
+      SELECT A.*, 
+      B.numAbogado, B.nombre AS nombreResponsable, 
+      A.comentarios AS 'comentarios2',
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaAlta, "%w"))
+        , ' ', DATE_FORMAT(A.fechaAlta, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaAlta, "%m"))
+        , ' ', DATE_FORMAT(A.fechaAlta, "%Y")
+        ) AS fechaAlta2,
+        CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaCompromiso, "%w"))
+        , ' ', DATE_FORMAT(A.fechaCompromiso, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaCompromiso, "%m"))
+        , ' ', DATE_FORMAT(A.fechaCompromiso, "%Y")
+        ) AS fechaCompromiso2,
+        DATEDIFF(A.fechaCompromiso, A.fechaRealizado)*-1 AS diferenciaTerminado,
+        (SELECT DATEDIFF(A.fechaCompromiso, NOW())) AS 'diferenciaFecha', 
+        CASE
+            WHEN A.estatusId&lt;4 AND (SELECT diferenciaFecha) &gt;=0 AND (SELECT diferenciaFecha)&lt;5 THEN "porvencer"
+            WHEN A.estatusId&lt;4 AND (SELECT diferenciaFecha) &lt;0 THEN "vencida"
+            ELSE ""
+        END AS clasevencido
+      FROM tareas A 
+      LEFT JOIN usuarios B ON A.responsableId=B.idUsuario
+      ?
+
+      
+
+      ?
+  </query>
+  </Command>
+
+  <Command id="TareasPorIdDB">
+    <query>SELECT *, DATE_FORMAT(fechaAlta, "%d/%m/%Y") AS fechaAlta2 FROM tareas WHERE idTarea=?</query>
+  </Command>
+  <Command id="CrearTareaDB">
+   <query>INSERT INTO tareas (usuarioId, tipo, importancia, nombre, comentarios, internos, reporte, padreTareaId, estatusId, fechaCompromiso, fechaRealizado, fechaAlta, responsableId) VALUES (?, '?', '?', '?', '?', '?', '?', ?, '?', ?, ?, '?', ?)</query>
+  </Command>
+  <Command id="EditarTareaDB">
+   <query>UPDATE tareas SET usuarioId=?, tipo=?, importancia='?', nombre='?', comentarios='?', internos='?', reporte='?', padreTareaId=?, estatusId=?, fechaCompromiso=?, fechaRealizado=?, fechaAlta='?', responsableId=?, fechaAct='?' WHERE idTarea=?</query>
+  </Command>
+  <Command id="EliminarTareaDB">
+    <query>DELETE FROM tareas ?</query>
+  </Command>
+  <Command id="ActCampoTareaDB">
+   <query>UPDATE tareas SET ?='?' WHERE idTarea=?</query>
+  </Command>
+
+  <!--Consultas digitales -->
+  <Command id="GridDigitalesActividadesDB">
+   <query>
+      SELECT A.*, DATE_FORMAT(A.fechaAlta, "%d/%m/%Y") AS fechaAlta2,
+      B.numAbogado,B.nombre nombreCreador,C.nombre nombreResponsable,
+      CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaCompromiso, "%w"))
+        , ' ', DATE_FORMAT(A.fechaCompromiso, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaCompromiso, "%m")) 
+        , ' ', DATE_FORMAT(A.fechaCompromiso, "%Y")
+        ) AS fechaCompromiso2,
+        CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fechaRealizado, "%w"))
+        , ' ', DATE_FORMAT(A.fechaRealizado, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fechaRealizado, "%m")) 
+        , ' ', DATE_FORMAT(A.fechaRealizado, "%Y")
+        ) AS fechaRealizado2,
+        DATEDIFF(A.fechaCompromiso, A.fechaRealizado)*-1 AS diferenciaTerminado,
+        (SELECT DATEDIFF(A.fechaCompromiso, NOW())) AS 'diferenciaFecha', 
+         CASE
+            WHEN A.estatusId&lt;4 AND (SELECT diferenciaFecha) &gt;=0 AND (SELECT diferenciaFecha)&lt;5 THEN "porvencer"
+            WHEN A.estatusId&lt;4 AND (SELECT diferenciaFecha) &lt;0 THEN "vencida"
+            ELSE ""
+        END AS clasevencido,
+      CASE
+            WHEN A.importancia = 1 THEN "Normal"
+            WHEN A.importancia = 2 THEN "Media"
+            WHEN A.importancia = 3 THEN "Alta"
+            ELSE ""
+        END AS importanciaTexto,
+    CASE
+      		WHEN A.tipo = 1 THEN "Administrativa"
+            WHEN A.tipo = 2 THEN "Otros"
+           
+            ELSE ""
+      END AS tipoTexto
+      ?
+      FROM digitales A 
+      LEFT JOIN usuarios B ON A.usuarioId=B.idUsuario
+      LEFT JOIN usuarios C ON A.responsableId=C.idUsuario
+      
+      ?
+      ORDER BY A.fechaCompromiso ASC
+  </query>
+  </Command>
+  
+  <Command id="ObtDigitalesDB">
+   <query>
+      SELECT A.*
+      
+      FROM digitales A 
+      
+      ?
+      ?
+  </query>
+  </Command>
+
+  <Command id="ObtDigitalesGridDB">
+   <query>
+      SELECT *, DATE_FORMAT(fechaCreacion, "%d/%m/%Y") AS 'fechaCreacion2' FROM digitales ?
+      
+  </query>
+  </Command>
+
+  <Command id="DigitalesPorIdDB">
+    <query> SELECT * FROM digitales WHERE idDocumento=? </query>
+  </Command>
+
+  <Command id="ObtenerAudiosGridDB">
+    <query> SELECT A.*, B.nombre,
+            CONCAT(
+        (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(A.fecha_creacion, "%w"))
+        , ' ', DATE_FORMAT(A.fecha_creacion, "%d"), ' ',
+        (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(A.fecha_creacion, "%m")) 
+        , ' ', DATE_FORMAT(A.fecha_creacion, "%Y"), 
+        ' ', DATE_FORMAT(A.fecha_creacion, "%H"), 
+        ':', DATE_FORMAT(A.fecha_creacion, "%i")
+        ) AS fechaGrabacion
+            FROM notas_voz A
+            LEFT JOIN usuarios B ON A.idUsuario = B.idUsuario 
+            WHERE idCaso=? ? </query>
+    </Command>
+  <Command id="ActualizarAudiosGridDB">
+   <query>UPDATE notas_voz SET descripcion='@descripcion' WHERE idNotaVoz='@idNotaVoz'</query> 
+  </Command>
+  <Command id="CrearDigitalDB">
+   <query>INSERT INTO digitales (casoId, tipo, nombre, url, descripcion) VALUES (?, '?', '?', '?', '?')</query> <!--// LDAH 16/08/2022 IMP para descripcion del archivo-->
+  </Command>
+  <Command id="CrearAudioDB">
+   <query>INSERT INTO notas_voz (idUsuario, fecha_creacion, url, idCaso, descripcion, audienciaTipo) VALUES (?, '?', '?', ?, '?', ?)</query> 
+  </Command>
+  <Command id="EditarDigitalDB">
+   <query>UPDATE digitales SET usuarioId=?, tipo=?, importancia='?', nombre='?', comentarios='?', internos='?', reporte='?', padreDigitalId=?, estatusId=?, fechaCompromiso=?, fechaRealizado=?, fechaAlta='?', responsableId=?, fechaAct='?' WHERE idDocumento=?</query>
+  </Command>
+  <Command id="EliminarDigitalDB">
+    <query> DELETE FROM digitales ? </query>
+  </Command>
+  <Command id="ActCampoDigitalDB">
+   <query>UPDATE digitales SET ?='?' WHERE idDocumento=?</query>
+  </Command>
+
+  <!--Consultas cat_comunicados -->
+  <Command id="ObtComunicadosDB">
+    <query>SELECT * FROM cat_comunicados ? ?</query>
+  </Command>
+  <Command id="ComunicadoPorIdDB">
+    <query>SELECT * FROM cat_comunicados WHERE idComunicado=?</query>
+  </Command>
+  <Command id="ActCampoComunicadoDB">
+    <query>UPDATE cat_comunicados SET ?='?' WHERE idComunicado=?</query>
+  </Command>
+  <Command id="insComunicadoGrid">
+    <query>INSERT INTO cat_comunicados (titulo, contenido, activo, fechaCreacion) VALUES ('@titulo', '@contenido', '@activo', NOW())</query>
+  </Command>
+  <Command id="actComunicadoGrid">
+    <query>UPDATE cat_comunicados SET titulo='@titulo', contenido='@contenido', activo='@activo', fechaAct=NOW() WHERE idComunicado=@idComunicado</query>
+  </Command>
+  <Command id="delComunicadoGrid">
+    <query>DELETE FROM cat_comunicados WHERE idComunicado=@idComunicado</query>
+  </Command>
+  <Command id="insertComunicadoDB">
+    <query>INSERT INTO cat_comunicados (nombre, activo, fechaCreacion) VALUES ('?', '?', '?')</query>
+  </Command>
+
+    <!--Consultas cat comentarios -->
+  <Command id="ObtTodasComentariosDB">
+   <query>SELECT * FROM comentarios ?</query>
+  </Command>
+  <Command id="ComentarioPorIdDB">
+    <query> SELECT * FROM comentarios WHERE idComentario=? </query>
+  </Command>
+  <Command id="insertComentarioDB">
+   <query>INSERT INTO comentarios (casoId, usuarioId, comentario, fechaCreacion) VALUES ('?', ?, '?', '?')</query>
+  </Command>
+  <Command id="insComentarioGrid">
+   <query>INSERT INTO comentarios (tipo, nombre, activo) VALUES (@tipo, '@nombre', '@activo')</query>
+  </Command>
+  <Command id="actComentarioGrid">
+   <query>UPDATE comentarios SET tipo=@tipo, nombre='@nombre', activo='@activo' WHERE idComentario=@idComentario</query>
+  </Command>
+  <Command id="delComentarioGrid">
+     <query>DELETE FROM comentarios WHERE idComentario=@idComentario</query>
+   </Command>
+
+      <!--Consultas cat_metodos -->
+  <Command id="ObtMetodosDB">
+    <query>SELECT * FROM cat_metodos ? ?</query>
+  </Command>
+  <Command id="MetodoPorIdDB">
+    <query>SELECT * FROM cat_metodos WHERE idMetodo=?</query>
+  </Command>
+  <Command id="ActCampoMetodoDB">
+    <query>UPDATE cat_metodos SET ?='?' WHERE idMetodo=?</query>
+  </Command>
+  <Command id="insMetodoGrid">
+    <query>INSERT INTO cat_metodos (nombre, requiereBanco, activo, fechaCreacion) VALUES ('@nombre', '@requiereBanco', '@activo', NOW())</query>
+  </Command>
+  <Command id="actMetodoGrid">
+    <query>UPDATE cat_metodos SET nombre='@nombre', requiereBanco=@requiereBanco, activo='@activo', fechaAct=NOW() WHERE idMetodo=@idMetodo</query>
+  </Command>
+  <Command id="delMetodoGrid">
+    <query>DELETE FROM cat_metodos WHERE idMetodo=@idMetodo</query>
+  </Command>
+  <Command id="insertMetodoDB">
+    <query>INSERT INTO cat_metodos (nombre, activo, fechaCreacion) VALUES ('?', '?', '?')</query>
+  </Command>
+
+      <!--Consultas cat_bancos -->
+  <Command id="ObtBancosDB">
+    <query>SELECT * FROM cat_bancos ? ?</query>
+  </Command>
+  <Command id="BancoPorIdDB">
+    <query>SELECT * FROM cat_bancos WHERE idBanco=?</query>
+  </Command>
+  <Command id="ActCampoBancoDB">
+    <query>UPDATE cat_bancos SET ?='?' WHERE idBanco=?</query>
+  </Command>
+  <Command id="insBancoGrid">
+    <query>INSERT INTO cat_bancos (nombre, activo, fechaCreacion) VALUES ('@nombre', '@activo', NOW())</query>
+  </Command>
+  <Command id="actBancoGrid">
+    <query>UPDATE cat_bancos SET nombre='@nombre', activo='@activo', fechaAct=NOW() WHERE idBanco=@idBanco</query>
+  </Command>
+  <Command id="delBancoGrid">
+    <query>DELETE FROM cat_bancos WHERE idBanco=@idBanco</query>
+  </Command>
+  <Command id="insertBancoDB">
+    <query>INSERT INTO cat_bancos (nombre, activo, fechaCreacion) VALUES ('?', '?', '?')</query>
+  </Command>
+
+  <!--Consultas cuentas -->
+  <Command id="ObtCuentasDB">
+   <query> SELECT * FROM cuentas ? </query>
+  </Command>
+  <Command id="CuentaPorIdDB">
+    <query>SELECT * FROM cuentas WHERE idCuenta=?</query>
+  </Command>
+
+  <Command id="CuentaPorCasoIdDB">
+    <query>
+    SELECT A.* 
+      FROM cuentas AS A 
+      LEFT JOIN cuentas_casos AS B ON B.cuentaId = A.idCuenta
+      WHERE B.casoId=?;
+    </query>
+  </Command>
+
+  <Command id="CasosDecuentaDB">
+    <query>
+      SELECT A.*, B.numExpediente, B.numExpedienteJuzgado
+        FROM cuentas_casos AS A 
+        LEFT JOIN casos AS B ON B.idCaso = A.casoId
+        WHERE A.cuentaId=?;
+    </query>
+  </Command>
+
+  <Command id="EliminarCuentaCasoDB">
+    <query>
+      DELETE FROM cuentas_casos 
+        WHERE cuentaId=? AND casoId=?;
+    </query>
+  </Command>
+
+  <Command id="AsociarCuentaCasoDB">
+    <query>
+      INSERT INTO cuentas_casos (cuentaId, casoId) VALUES(?,?); 
+    </query>
+  </Command>
+
+  <Command id="ObtCasosPorIdClienteSinCta">
+    <query>
+      SELECT A.idCaso, A.clienteId, A.numExpediente, A.numExpedienteJuzgado, B.idCuentaCaso, B.cuentaId
+        FROM casos AS A 
+        LEFT JOIN cuentas_casos AS B ON B.casoId = A.idCaso
+        WHERE clienteId = ? AND idCuentaCaso IS NULL;
+    </query>
+  </Command>
+
+  <Command id="CrearCuentaDB">
+   <query>INSERT INTO cuentas (casoId, clienteId, tipoCobro, planPagos, monto, saldo, comentarios, avance, montoAux, numMeses, diaCobro, fechaCreacion) VALUES (?, ?, ?, ?, ?, ?, '?', ?, ?, ?, ?, '?')</query>
+  </Command>
+  <Command id="EditarCuentaDB">
+   <query>UPDATE cuentas SET nombre='?', telefono='?', email='?', direccion='?', empresa='?', fechaAct='?' WHERE idCuenta=?</query>
+  </Command>
+
+  <Command id="ActCampoCuentaDB">
+   <query>UPDATE cuentas SET ?='?' WHERE idCuenta=?</query>
+  </Command>
+
+  <Command id="ActCampoCuentaJsonDB">
+   <query>UPDATE cuentas SET ?=NULL WHERE idCuenta=?</query>
+  </Command>
+
+  <Command id="insCuentaGrid">
+   <query>INSERT INTO cuentas (nombre, telefono, email, direccion, empresa, aka, fechaAct, fechaCreacion) VALUES ('@nombre', '@telefono', '@email', '@direccion', '@empresa', '@aka', NOW(), NOW())</query>
+  </Command>
+  <Command id="actCuentaGrid">
+   <query>UPDATE cuentas SET nombre='@nombre', telefono='@telefono', email='@email', direccion='@email', empresa='@empresa', aka='@aka', fechaAct=NOW() WHERE idCuenta=@idCuenta</query>
+  </Command>
+
+  <!--Consultas pagos -->
+  <Command id="ObtPagosDB">
+   <query> 
+          SELECT *,
+          IF(recibo != '', 'grid_open', 'oculto') AS claseRecibo,
+          CONCAT(
+              (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(fechaPago, "%w")),
+              ' ', DATE_FORMAT(fechaPago, "%d"), ' ',
+              (SELECT spanish2 FROM tblMonthName WHERE id=DATE_FORMAT(fechaPago, "%m"))
+          ) AS fechaFormateada
+        FROM pagos ? 
+  </query>
+  </Command>
+  <Command id="PagoPorIdDB">
+    <query>SELECT * FROM pagos WHERE idPago=?</query>
+  </Command>
+  <Command id="CrearPagoDB">
+   <query>INSERT INTO pagos (cuentaId, metodoId, bancoId, monto, comentarios, recibo, fechaPago, tipo,  fechaCreacion) VALUES (?, ?, ?, ?, '?', '?', '?', ?, '?')</query>
+  </Command>
+  <Command id="EditarPagoDB">
+   <query>UPDATE pagos SET nombre='?', telefono='?', email='?', direccion='?', empresa='?', fechaAct='?' WHERE idPago=?</query>
+  </Command>
+  <Command id="insPagoGrid">
+   <query>INSERT INTO pagos (nombre, telefono, email, direccion, empresa, aka, fechaAct, fechaCreacion) VALUES ('@nombre', '@telefono', '@email', '@direccion', '@empresa', '@aka', NOW(), NOW())</query>
+  </Command>
+  <Command id="actPagoGrid">
+   <query>UPDATE pagos SET nombre='@nombre', telefono='@telefono', email='@email', direccion='@email', empresa='@empresa', aka='@aka', fechaAct=NOW() WHERE idPago=@idPago</query>
+  </Command>
+   <Command id="EliminarCobro">
+    <query>UPDATE cuentas SET cobrosJson = JSON_REMOVE(cobrosJson, '$[?]') WHERE idCuenta = ?;</query>
+  </Command>
+  <Command id="EditarCuentaDBnumMeses">
+   <query>UPDATE cuentas SET numMeses=? WHERE idCuenta=?</query>
+  </Command>
+
+</Commands>

@@ -1,0 +1,18 @@
+.hostpot{
+	background: lightgrey; 
+	border-radius: 50%; 
+	height: 25px; 
+	width: 25px;		
+	position: absolute;
+}		
+#drag-me::before {
+  content: "#" attr(id);
+  font-weight: bold;
+}
+#cont_hostpot {
+	display: inline-block;
+	vertical-align: top;
+	width: 70%;
+	height: 70%;			
+	background-image: url('JETT18.jpg');
+}

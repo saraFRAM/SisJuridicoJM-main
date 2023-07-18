@@ -1,0 +1,100 @@
+11 03 2022 12:37:01: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:37:19: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:37:48: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:47:08: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:48:05: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:48:42: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:49:39: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:50:21: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:53:14: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:54:10: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:54:27: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:56:13: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:56:32: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:57:21: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:57:46: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:58:00: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:58:16: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:58:36: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 12:59:46: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 13:02:21: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 13:02:37: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 13:03:24: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 13:04:49: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 13:08:26: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
+11 03 2022 13:08:52: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+-- Query name: UserByID
+-- Query str: SELECT * FROM usuarios WHERE idUsuario= 
+
