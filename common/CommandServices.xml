@@ -438,6 +438,7 @@
     <query>
         SELECT a.*, b.nombre AS cliente, c.nombre AS tipocaso, 
 	  e.nombre nombreMateria, f.nombre nombreDistrito, g.nombre nombreJuzgado,
+    
       CONCAT(
         (SELECT spanish2 FROM tblWeekName WHERE id=DATE_FORMAT(a.fechaAlta, "%w"))
         , ' ', DATE_FORMAT(a.fechaAlta, "%d"), ' ',
@@ -457,6 +458,7 @@
       LEFT JOIN cat_materias AS e ON a.materiaId=e.idMateria
       LEFT JOIN cat_distritos AS f ON a.distritoId=f.idDistrito
       LEFT JOIN cat_juzgados AS g ON a.juzgadoId=g.idJuzgado
+   
       ?
     </query>
   </Command>
@@ -487,7 +489,7 @@
   <Command id="datosCaso">
     <query>
      SELECT 
-              A.representado,
+             
               A.numExpedienteJuzgado,
               A.juicioId,
               A.parteId,
@@ -503,6 +505,7 @@
             LEFT JOIN cat_juicios C ON A.juicioId = C.idJuicio
             LEFT JOIN cat_materias D ON A.materiaId = D.idMateria
             LEFT JOIN cat_juzgados E ON A.juzgadoId = E.idJuzgado WHERE idCaso=?
+
     </query>
   </Command>
   <Command id="GetCasoArbolPorRaiz">
@@ -510,7 +513,7 @@
       SELECT 
         idCaso, idPadre, idPadreMain,
         representado,
-        numExpedienteJuzgado, estatusId
+        numExpedienteJuzgado, estatusId,numExpediente
         B.nombre parte,
         C.nombre juicio,
         D.nombre materia,
@@ -1542,5 +1545,17 @@
   <Command id="EditarCuentaDBnumMeses">
    <query>UPDATE cuentas SET numMeses=? WHERE idCuenta=?</query>
   </Command>
+
+    <Command id="CampoRepresentados">
+      <query>
+        SELECT DISTINCT representado FROM casos WHERE estatusId IN(1,5) ORDER BY representado;
+      </query>
+    </Command>
+    <Command id="CampoRepresentadoshistorico">
+      <query>
+        SELECT DISTINCT representado FROM casos WHERE estatusId IN(2,3,4) ORDER BY representado;
+      </query>
+    </Command>
+
 
 </Commands>

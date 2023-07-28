@@ -432,6 +432,8 @@ $arrCampoNombreSecret = array(
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Editar Expediente</title>
     <?php echo estilosPagina(true); ?>
+
+  
 </head>
 
 <body>
@@ -447,7 +449,6 @@ $arrCampoNombreSecret = array(
     				<div class="colmenu col-md-2 menu_bg">
                         <?php echo getNav($menu); ?>
                     </div>
-
                     <div class="col-md-10" style="<?php echo ($datosCaso->estatusId == 2)?'background-color: #fa0606':''; ?>" >
                         <h1 class="titulo">Editar Expediente<span class="pull-right"><a id="btnAyudaweb" onclick="mostrarAyuda('web_expediente')" href="#fancyAyudaWeb"><img src="../images/icon_ayuda.png" width="20px"></a></span></h1>
                         <ol class="breadcrumb">
@@ -1662,7 +1663,7 @@ $arrCampoNombreSecret = array(
           <div class="modal-dialog">
             <div class="modal-content">
                   <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="close" data-dismiss="modal" onclick="actualizarGridDigitales()">&times;</button>
                     <h4 class="modal-title">Crear Documento Expediente Digital</h4>
                 </div>
                 <div class="row">
@@ -2080,7 +2081,7 @@ $arrCampoNombreSecret = array(
             <p style="margin-left:120px">Tiempo: <span id="contador">0</span> segundos</p>
             <audio id="audioPreview" controls style="display: none"></audio>
               <div class="container">
-                <label>Descripci&oacute;n</label>
+                <label>Descripci&oacute;n</label>   
                 <br/>
                 <textarea name="notaVozDescripcion" id="notaVozDescripcion" cols="42" rows="4" >
 
@@ -2177,6 +2178,7 @@ $arrCampoNombreSecret = array(
             searhColMaxLength();
         });
     </script>
+      
 </body>
 
 </html>

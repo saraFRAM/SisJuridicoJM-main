@@ -215,7 +215,8 @@ class casosDB {
       return $result;
   }
 
-    public function CasosDataSet($ds, $idCliente, $idAbogado, $titularId,$pantalla=0, $filResponsables = '', $filClientes = '', $filEstatus = '', $filJuicios = '', $filJuzgados = '', $filMaterias = '', $filClientesno = '', $filCaso, $filDistritos = ''){
+    public function CasosDataSet($ds, $idCliente, $idAbogado, $titularId,$pantalla=0, $filResponsables = '', $filClientes = '', $filEstatus = '', $filJuicios = '', $filJuzgados = '', $filMaterias = '', $filClientesno = '', $filCaso, $filDistritos, $filRepresentado =''){
+        //var_dump($idCliente, $idAbogado, $titularId,$pantalla, $filResponsables, $filClientes, $filEstatus, $filJuicios, $filJuzgados, $filMaterias, $filClientesno, $filCaso, $filDistritos, $filRepresentado); exit;
         $dsO = new DataServices();
         $param[0] = "";
         $param[1] = "";
@@ -267,6 +268,21 @@ class casosDB {
         if($filDistritos != ''){
             $query [] = " a.distritoId IN($filDistritos)";
         }
+        if($filRepresentado != ''){
+    
+            $str_arr = explode (",", $filRepresentado); 
+            $querArr = array();
+       
+            foreach ($str_arr as $valor) {
+                $qurRepreFinal = '';
+                $qurRepreFinal .= "'";
+                $qurRepreFinal .= $valor;
+                $qurRepreFinal .= "'";
+                $querArr[] = $qurRepreFinal;
+            }
+           
+            $query [] = " a.representado IN(".implode (",",$querArr).")";
+        }
         
         //pantalla 0 = expedientes, 1=historico
         if($pantalla===0 && $filEstatus == ''){
@@ -296,4 +312,36 @@ class casosDB {
         return $ds;
     }
 
+
+            //method declaration
+    public function ObtrepresentadoDB(){
+        $ds = new DataServices();
+        $param[0] = null;
+
+        $result = $ds->Execute("CampoRepresentados", $param);
+        $ds->CloseConnection();
+        
+        return $result;
+    } 
+
+    public function ObtrepresentadoDBH(){
+        $ds = new DataServices();
+        $param[0] = null;
+
+        $result = $ds->Execute("CampoRepresentadoshistorico", $param);
+        $ds->CloseConnection();
+        
+        return $result;
+    } 
+
+
+
+
+
 }
+    
+
+
+    
+
+    

@@ -373,4 +373,77 @@ function obtenerCampoClientesExep($clientesIds = ''){
     $btnRst = str_replace("idfilter","rs_fil_clientenoId",BTN_RST);
     return generaHtmlForm($arrCampoCliente, $cols,$btnRst);
 }
+
+function obtenerCampoRepresentado($representado = ''){
+    $casosObj = new casosObj();
+    $claseRepresentado = "";
+    $representadoId = "";
+
+    //datos
+
+    $colRep = $casosObj->Obtrepresentado();
+    $arrRepresentado = array();
+
+    foreach ($colRep as $itemRep) {
+        $arrRepresentado[] = array("valor"=>$itemRep->representado, "texto"=>$itemRep->representado);    
+    }
+
+    //parametros input
+    $data = array(
+        "data-live-search"=>"true",
+        "multiple"=>"multiple"
+      );
+
+    //campo
+    $arrCampoRepresentado = array(
+        array("nameid"=>"fil_representadoId", "type"=>"select", "class"=>"form-control selectpicker required ".$claseRepresentado, "readonly"=>false, "label"=>"Representado:", "datos"=>$arrRepresentado, "value"=>$representadoId, "dataInput"=>$data, "multivalue"=>$representado),
+    );
+
+    $cols = array("label_xs"=>"4", "label_md"=>"4", "input_xs"=>"6", "input_md"=>"6");
+
+    $btnRst = str_replace("idfilter","rs_fil_representadoId",BTN_RST);
+
+    return generaHtmlForm($arrCampoRepresentado, $cols, $btnRst);
+}
+
+function obtenerCampoRepresentadoH($representado = ''){
+    $casosObj = new casosObj();
+    $claseRepresentado = "";
+    $representadoId = "";
+
+    //datos
+
+    $colRep = $casosObj->ObtrepresentadoH();
+    $arrRepresentado = array();
+
+    foreach ($colRep as $itemRep) {
+        $arrRepresentado[] = array("valor"=>$itemRep->representado, "texto"=>$itemRep->representado);    
+    }
+
+    //parametros input
+    $data = array(
+        "data-live-search"=>"true",
+        "multiple"=>"multiple"
+      );
+
+    //campo
+    $arrCampoRepresentado = array(
+        array("nameid"=>"fil_representadoId", "type"=>"select", "class"=>"form-control selectpicker required ".$claseRepresentado, "readonly"=>false, "label"=>"Representado:", "datos"=>$arrRepresentado, "value"=>$representadoId, "dataInput"=>$data, "multivalue"=>$representado),
+    );
+
+    $cols = array("label_xs"=>"4", "label_md"=>"4", "input_xs"=>"6", "input_md"=>"6");
+
+    $btnRst = str_replace("idfilter","rs_fil_representadoId",BTN_RST);
+
+    return generaHtmlForm($arrCampoRepresentado, $cols, $btnRst);
+}
+
+
+
+
+
+
+
+
+
 ?>

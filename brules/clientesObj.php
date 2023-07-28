@@ -11,6 +11,7 @@ class clientesObj extends configuracionesGridObj{
     private $_telefono = '';
     private $_email = '';
     private $_direccion = '';
+    private $_representado = '';
     private $_empresa = '';
     private $_aka = '';
     private $_activo = 0;
@@ -67,6 +68,8 @@ class clientesObj extends configuracionesGridObj{
         $param[3] = $this->_direccion;
         $param[4] = $this->_empresa;
         $param[5] = $this->_aka;
+        $param[6] = $this->_representado;
+
         
         if($update){ //Para actualizar
             $param[6] = $this->_fechaAct;
@@ -109,6 +112,7 @@ class clientesObj extends configuracionesGridObj{
         $configGrid->defineColumn($grid, "telefono", "Tel&eacute;fono", true, false, 0);
         $configGrid->defineColumn($grid, "direccion", "Direcci&oacute;n", true, false, 0);
         $configGrid->defineColumn($grid, "empresa", "Empresa", true, false, 0);
+        $configGrid->defineColumn($grid, "representado", "Representado", true, false, 0);
         $configGrid->defineColumn($grid, "aka", "Aka", false, false, 0);
         // if($_SESSION['idRol']==1 || $_SESSION['idRol']==2){
             $configGrid->defineColumnEdit($grid);

@@ -250,7 +250,9 @@ class configuracionesGridObj {
         elseif($grid->id=="audios" || $grid->id=="audiosTitular"){
             if ($name_field == 'url') {
                 $column = new GridCustomColumn();
-                $column->ItemTemplate = '<audio id="audio{idNotaVoz}" class="myAudio" preload="metadata" controls>
+                
+                
+                $column->ItemTemplate = '<audio id="audio{idNotaVoz}" class="myAudio" controls preload="metadata"  >
                                             <source src="{url}" type="audio/mp3">
                                          </audio>
                                          <a type="button" class="btn btn-primary" id="velocidadNormal"  data-target="audio{idNotaVoz}">
@@ -262,8 +264,9 @@ class configuracionesGridObj {
                                          <a type="button" class="btn btn-primary" id="velocidadX2"  data-target="audio{idNotaVoz}">
                                             x2
                                          </a>';
+              
                 //print_r($url);
-            }
+            }  
 
         }
         elseif($grid->id=="cat_comunicados"){

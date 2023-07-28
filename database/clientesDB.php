@@ -12,7 +12,7 @@ class clientesDB {
 
         if($soloExpActivos){
              $query[] = " (SELECT COUNT(sca.clienteId) FROM casos sca
-             WHERE sca.estatusId = 1 && 2
+             WHERE sca.estatusId = 1 && 5
               AND sca.clienteId = ca.clienteId
               GROUP BY clienteId) > 0 ";
         }

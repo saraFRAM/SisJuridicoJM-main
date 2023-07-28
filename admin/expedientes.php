@@ -65,9 +65,7 @@ $filSel = "";
 $filTexto = "";
 $filEstatus = "";
 
-$arrCampoRepresentado = array(
-    array("nameid"=>"representado", "type"=>"text", "class"=>"form-control", "readonly"=>false, "label"=>"Representado:", "datos"=>array(), "value"=>""),
-  );
+
 $caso = (isset($_GET["caso"]) && $_GET["caso"] != 'null')?$_GET["caso"]:'';
 //echo $caso;
 $responsables = (isset($_GET["responsables"]) && $_GET["responsables"] != 'null')?$_GET["responsables"]:'';
@@ -81,7 +79,7 @@ $camposIds = (isset($_GET["camposIds"]) && $_GET["camposIds"] != 'null')?$_GET["
 $mostrarCamposTitular = (isset($_GET["mostrarCamposTitular"]) && $_GET["mostrarCamposTitular"] != 'null')?$_GET["mostrarCamposTitular"]:'';
 $mostrarCamposGrid = (isset($_GET["mostrarCamposGrid"]) && $_GET["mostrarCamposGrid"] != 'null')?$_GET["mostrarCamposGrid"]:$usuario->camposGridExp;
 $distritos = (isset($_GET["distritos"]) && $_GET["distritos"] != 'null')?$_GET["distritos"]:'';
-
+$representado = (isset($_GET["representado"]) && $_GET["representado"] != 'null')?$_GET["representado"]:'';
 
 $clientesno = (isset($_GET["clientesno"]) && $_GET["clientesno"] != 'null')?$_GET["clientesno"]:'';
 
@@ -90,8 +88,9 @@ if($mostrarCamposGrid != ''){
 }
 //$result = $casosObj->ObtListadoCasosGrid($idCliente, $idAbogado, $filSel, $filTexto, $filEstatus, $titularId, $filtroTitular,$pantalla=0);
 //Jair 17/2/2022 Obtener el grid y los ids seleccionados
-
-list($result,$selected_keys) = $casosObj->ObtListadoCasosGrid($idCliente, $idAbogado, $mostrarCamposTitular, $filTexto, $filEstatus, $titularId, $filtroTitular,$pantalla=0, $activar, $responsables, $clientes, $estatus, $juicios, $juzgados, $materias, $camposIds, $mostrarCamposGrid, $clientesno, $caso, $distritos);
+     
+//var_dump($idCliente, $idAbogado, $mostrarCamposTitular, $filTexto, $filEstatus, $titularId, $filtroTitular,$pantalla=0, $activar, $responsables, $clientes, $estatus, $juicios, $juzgados, $materias, $camposIds, $mostrarCamposGrid, $clientesno, $caso, $distritos,$representado); exit;
+list($result,$selected_keys) = $casosObj->ObtListadoCasosGrid($idCliente, $idAbogado, $mostrarCamposTitular, $filTexto, $filEstatus, $titularId, $filtroTitular,$pantalla=0, $activar, $responsables, $clientes, $estatus, $juicios, $juzgados, $materias, $camposIds, $mostrarCamposGrid, $clientesno, $caso, $distritos,$representado);
 //$selected_keys = $result->GetInstanceMasterTable()->SelectedKeys;
 //echo 'tengo';print_r($result->Render());
 $mensaje = '';
@@ -286,7 +285,7 @@ $arrCampoResponsable = array(
                                  <?php if($_SESSION['idRol'] == 1){ ?>
                                     <a href="historico.php?mostrarCamposTitular=1&camposIds=3,4" class="btn btn-primary">Historico</a>
                                 <?php } else{ ?>
-                                        <a href="historico.php" class="btn btn-primary">Historico</a>
+                                        <a href="historico.php" class="btn btn-primary">                                                                                                    </a>
                                     <?php } ?>
                             </div>   
                             <div class="col-xs-4 col-sm-2">
@@ -407,11 +406,9 @@ $arrCampoResponsable = array(
                                                     <?php echo obtenerCampoJuzgados($juzgados); ?>
                                                     <?php echo obtenerCampoTitular($mostrarCamposTitular); ?>
                                                     <?php echo obtenerCamposGrid($mostrarCamposGrid); ?>
-                                                    <?php
-                                                    $cols = array("label_xs"=>"4", "label_md"=>"4", "input_xs"=>"7", "input_md"=>"7");
-                                                    echo generaHtmlForm($arrCampoRepresentado, $cols);
-                                                ?>
-                                                </div>
+                                                    <?php echo obtenerCampoRepresentado($representado); ?>
+                                                   
+                                                      </div>
                                                 <div class="col-xs-6">
                                                     <?php echo obtenerCampoEstatus($estatus); ?>
                                                     <?php echo obtenerCampoMaterias($materias); ?>

@@ -1796,12 +1796,11 @@ function filtrarExpedientes(){
   let camposIds = ($("#fil_campos").val() != null)?$("#fil_campos").val():'';
   let clientesno = ($("#fil_clientenoId").val() != null)?$("#fil_clientenoId").val():'';
   let distritos = ($("#fil_distritoId").val() != null)?$("#fil_distritoId").val():'';
-
-
+  let representado = ($("#fil_representadoId").val() != null)?$("#fil_representadoId").val():'';
   let mostrar = ($("#fil_mostrar").val() != null)?$("#fil_mostrar").val():'';//Mostrar campos titular
   let camposGrid = ($("#fil_camposgrid").val() != null)?$("#fil_camposgrid").val():'';//Mostrar campos grid
   
-  console.log(clientesno);
+  
   let filtros = [];
   if(responsables != ''){
     filtros.push('responsables='+responsables);
@@ -1833,6 +1832,9 @@ function filtrarExpedientes(){
   }
   if(clientesno !=''){
     filtros.push('clientesno='+clientesno)
+  }
+  if(representado !=''){
+    filtros.push('representado='+representado)
   }
 
   if(distritos != ''){
@@ -2864,6 +2866,7 @@ function filtrarExpedientesHis(){
   let materias = ($("#fil_materiaId").val() != null)?$("#fil_materiaId").val():'';
   let camposIds = ($("#fil_campos").val() != null)?$("#fil_campos").val():'';
   let clientesno = ($("#fil_clientenoId").val() != null)?$("#fil_clientenoId").val():'';
+  let representado = ($("#fil_representadoId").val() != null)?$("#fil_representadoId").val():'';
   let mostrar = ($("#fil_mostrar").val() != null)?$("#fil_mostrar").val():'';//Mostrar campos titular
   let camposGrid = ($("#fil_camposgrid").val() != null)?$("#fil_camposgrid").val():'';//Mostrar campos grid
   console.log(clientesno);
@@ -2895,9 +2898,15 @@ function filtrarExpedientesHis(){
   if(clientesno !=''){
     filtros.push('clientesno='+clientesno)
   }
+
+ if(representado !=''){
+    filtros.push('representado='+representado)
+  }
+
   if(camposGrid != ''){
     filtros.push('mostrarCamposGrid='+camposGrid);
   }
+
   if(filtros.length > 0){
     location.href = "historico.php?"+filtros.join("&");
   }else{
@@ -3508,7 +3517,12 @@ startRecordingButton.addEventListener('click', () => {
       recorder.addEventListener('dataavailable', event => {
         chunks.push(event.data);
       });
-
+      
+      var audio = document.getElementById("audio");
+       audio.onloadeddata = function() {
+          alert(audio.duration);
+      };
+      
       recorder.addEventListener('stop', () => {
         audioBlob = new Blob(chunks, { type: 'audio/mp3' });
         audioPreview.src = URL.createObjectURL(audioBlob);
@@ -3653,3 +3667,5 @@ function cantidadMoneda(cantidad){
 function stateSoloVozTitular(status){
   $("#mostrarTitulares").prop('checked', status);
 }
+
+

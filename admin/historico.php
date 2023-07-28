@@ -17,11 +17,11 @@ include_once '../brules/catMateriasObj.php';
 include_once '../brules/catJuiciosObj.php';
 include_once '../brules/catJuzgadosObj.php';
 include_once '../brules/catDistritosObj.php';
-include_once '../brules/clientesObj.php';//LDAH IMP 23/08/2022 Filtros en historico
+include_once '../brules/clientesObj.php';
 include_once '../brules/usuariosObj.php';
 include_once '../brules/mensajesObj.php';
 include_once '../brules/arraysObj.php';
-include_once 'filtrosExpGrid.php'; //LDAH IMP 23/08/2022 Filtros en historico
+include_once 'filtrosExpGrid.php';
 
 $casosObj = new casosObj();
 $usuariosObj = new usuariosObj();
@@ -46,7 +46,7 @@ $titularId = "";
 $filtroTitular = "";
 if($_SESSION['idRol']==1){
     $titularId = $_SESSION['idUsuario'];
-    if($usuario->titularTodos < 0){
+    if($usuario->titularTodos > 0){
         $titularId = "";
         $filtroTitular = $usuario->nombre;
     }
@@ -55,7 +55,6 @@ elseif($_SESSION['idRol']==4){
     $idAbogado = $_SESSION['idUsuario'];
 }
 
-//LDAH IMP 23/08/2022 Filtros en historico
 $activar = 0;
 if(isset($_POST["activar"])){
     $activar = $_POST["activar"];
@@ -65,9 +64,7 @@ $filSel = "";
 $filTexto = "";
 $filEstatus = "";
 
-$arrCampoRepresentado = array(
-    array("nameid"=>"representado", "type"=>"text", "class"=>"form-control", "readonly"=>false, "label"=>"Representado:", "datos"=>array(), "value"=>""),
-  );
+
 $caso = (isset($_GET["caso"]) && $_GET["caso"] != 'null')?$_GET["caso"]:'';
 //echo $caso;
 $responsables = (isset($_GET["responsables"]) && $_GET["responsables"] != 'null')?$_GET["responsables"]:'';
@@ -81,18 +78,19 @@ $camposIds = (isset($_GET["camposIds"]) && $_GET["camposIds"] != 'null')?$_GET["
 $mostrarCamposTitular = (isset($_GET["mostrarCamposTitular"]) && $_GET["mostrarCamposTitular"] != 'null')?$_GET["mostrarCamposTitular"]:'';
 $mostrarCamposGrid = (isset($_GET["mostrarCamposGrid"]) && $_GET["mostrarCamposGrid"] != 'null')?$_GET["mostrarCamposGrid"]:$usuario->camposGridExp;
 $distritos = (isset($_GET["distritos"]) && $_GET["distritos"] != 'null')?$_GET["distritos"]:'';
-
+$representado = (isset($_GET["representado"]) && $_GET["representado"] != 'null')?$_GET["representado"]:'';
 
 $clientesno = (isset($_GET["clientesno"]) && $_GET["clientesno"] != 'null')?$_GET["clientesno"]:'';
 
 if($mostrarCamposGrid != ''){
     $usuariosObj->ActualizarUsuario("camposGridExp", $mostrarCamposGrid, $usuario->idUsuario);
 }
-//list($result,$selected_keys) = $casosObj->ObtListadoCasosGrid($idCliente, $idAbogado, $filSel, $filTexto, $filEstatus, $titularId, $filtroTitular,$pantalla=1);
-//LDAH IMP 23/08/2022 Filtros en historico
+//$result = $casosObj->ObtListadoCasosGrid($idCliente, $idAbogado, $filSel, $filTexto, $filEstatus, $titularId, $filtroTitular,$pantalla=0);
+//Jair 17/2/2022 Obtener el grid y los ids seleccionados
+     
+//var_dump($idCliente, $idAbogado, $mostrarCamposTitular, $filTexto, $filEstatus, $titularId, $filtroTitular,$pantalla=0, $activar, $responsables, $clientes, $estatus, $juicios, $juzgados, $materias, $camposIds, $mostrarCamposGrid, $clientesno, $caso, $distritos,$representado); exit;
+list($result,$selected_keys) = $casosObj->ObtListadoCasosGrid($idCliente, $idAbogado, $mostrarCamposTitular, $filTexto, $filEstatus, $titularId, $filtroTitular,$pantalla=1, $activar, $responsables, $clientes, $estatus, $juicios, $juzgados, $materias, $camposIds, $mostrarCamposGrid, $clientesno, $caso, $distritos,$representado);
 
-list($result,$selected_keys) = $casosObj->ObtListadoCasosGrid($idCliente, $idAbogado, $mostrarCamposTitular, $filTexto, $filEstatus, $titularId, $filtroTitular,$pantalla=1, $activar, $responsables, $clientes, $estatus, $juicios, $juzgados, $materias, $camposIds, $mostrarCamposGrid, $clientesno, $caso, $distritos);
-//$selected_keys = $result->GetInstanceMasterTable()->SelectedKeys;
 //echo 'tengo';print_r($result->Render());
 $mensaje = '';
 $warning = '';
@@ -408,9 +406,9 @@ $arrCampoResponsable = array(
                                                     <?php echo obtenerCampoJuzgados($juzgados); ?>
                                                     <?php echo obtenerCampoTitular($mostrarCamposTitular); ?>
                                                     <?php echo obtenerCamposGrid($mostrarCamposGrid); ?>
+                                                    <?php echo obtenerCampoRepresentadoH($representado); ?>
                                                     <?php
-                                                    $cols = array("label_xs"=>"4", "label_md"=>"4", "input_xs"=>"7", "input_md"=>"7");
-                                                    echo generaHtmlForm($arrCampoRepresentado, $cols);
+                                                  
                                                 ?>
                                                 </div>
                                                 <div class="col-xs-6">
@@ -418,7 +416,7 @@ $arrCampoResponsable = array(
                                                     <?php echo obtenerCampoMaterias($materias); ?>
                                                     <?php echo obtenerCampoJuicios($juicios); ?>
                                                     <?php echo obtenerCampoCampos($camposIds); ?>
-                                                    <?php echo obtenerCampoDistritos($distritos); ?>
+
                                                     <a onclick="filtrarExpedientesHis()" class="btn btn-primary">Filtrar</a>  <!-- //LDAH IMP 23/08/2022 Filtros en historico -->
                                                 </div>
                                             </div>

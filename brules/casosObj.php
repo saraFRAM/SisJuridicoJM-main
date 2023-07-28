@@ -411,13 +411,14 @@ class casosObj extends configuracionesGridObj{
 
 
     //Grid
-    public function ObtListadoCasosGrid($idCliente=-1 ,$idAbogado=-1, $mostrarCamposTitular = false, $filTexto="", $filEstatusAnt="", $titularId = "", $filtroTitular = "",$pantalla = 0, $activar = 0, $filResponsables = '', $filClientes = '', $filEstatus = '', $filJuicios = '', $filJuzgados = '', $filMaterias = '', $camposIds = '', $filCamposGrid = '', $filClientesno = '', $filCaso = '', $filDistritos = ''){
+    public function ObtListadoCasosGrid($idCliente=-1 ,$idAbogado=-1, $mostrarCamposTitular = false, $filTexto="", $filEstatusAnt="", $titularId = "", $filtroTitular = "",$pantalla = 0, $activar = 0, $filResponsables = '', $filClientes = '', $filEstatus = '', $filJuicios = '', $filJuzgados = '', $filMaterias = '', $camposIds = '', $filCamposGrid = '', $filClientesno = '', $filCaso = '', $filDistritos = '',$filRepresentado = ''){
         $DataServices = new DataServices();
         $dbConn = $DataServices->getConnection();
         $ds = new MySQLiDataSource($dbConn);
         $uDB = new casosDB();
-        $ds = $uDB->CasosDataSet($ds, $idCliente ,$idAbogado, $titularId,$pantalla, $filResponsables, $filClientes, $filEstatus, $filJuicios, $filJuzgados, $filMaterias, $filClientesno, $filCaso, $filDistritos);
+        $ds = $uDB->CasosDataSet($ds, $idCliente ,$idAbogado, $titularId,$pantalla, $filResponsables, $filClientes, $filEstatus, $filJuicios, $filJuzgados, $filMaterias, $filClientesno, $filCaso, $filDistritos, $filRepresentado);
         $grid = new KoolGrid("casos");
+        
         $configGrid = new configuracionesGridObj();
         $arrCampos = explode(",", $camposIds);
         $arrCamposGrid = explode(",", $filCamposGrid);
@@ -454,6 +455,9 @@ class casosObj extends configuracionesGridObj{
         if($filCamposGrid == '' || in_array("titular", $arrCamposGrid)){
             $configGrid->defineColumn($grid, "titular", "Responsable", true, false, 1);//Nombre del responsable rol abogado
         }
+        if($filCamposGrid == '' || in_array("representado", $arrCamposGrid)){
+            $configGrid->defineColumn($grid, "representado", "Representado", true, false);
+        } 
 
         if($_SESSION['idRol']==1 || $_SESSION['idRol']==2){
             $configGrid->defineColumn($grid, "numAbogado", "Num Abogado", true, false, 1);
@@ -479,10 +483,6 @@ class casosObj extends configuracionesGridObj{
         }
         if($_SESSION["idRol"] != 5 && ($filCamposGrid == '' || in_array("cliente", $arrCamposGrid))){
             $configGrid->defineColumn($grid, "cliente", "Cliente", true, false, 1);
-        }
-
-        if($filCamposGrid == '' || in_array("representado", $arrCamposGrid)){
-            $configGrid->defineColumn($grid, "representado", "Representado", true, false, 1);
         }
 
         //Jair 6/5/2022 Campo aka asunto entre representado y contrario
@@ -604,4 +604,28 @@ class casosObj extends configuracionesGridObj{
         return $datosBD->setDatos($result, $obj);
     } */
 
+    
+    public function Obtrepresentado(){
+        $array = array();
+        $ds = new casosDB();
+        $datosBD = new datosBD();
+        $result = $ds->ObtrepresentadoDB();
+        $array =  $datosBD->arrDatosObj($result);
+
+        return $array;
+    }
+
+    public function ObtrepresentadoH(){
+        $array = array();
+        $ds = new casosDB();
+        $datosBD = new datosBD();
+        $result = $ds->ObtrepresentadoDBH();
+        $array =  $datosBD->arrDatosObj($result);
+
+        return $array;
+    }
+
+
 }
+
+

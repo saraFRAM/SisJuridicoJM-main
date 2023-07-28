@@ -213,7 +213,10 @@ class DataServices{
 		
 		//Replace the $param with the ones given in the paramater set
 		$queryStr = $this->ReplaceParam($params, $queryStr);
-		// echo $queryStr.'<br/>';
+		
+		if($queryName == 'ObtCasosDB'){
+			//echo $queryStr.'<br/>';die();
+		}
 
 		return $queryStr;
 
